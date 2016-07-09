@@ -1,0 +1,21 @@
+{
+    "app": {
+        "name": "Badger",
+        "printer": "HP_LaserJet_Professional_P1102w_2",
+        "debug": true,
+        "defaultFont": "Helvetica",
+        "print": false,
+        "outputDir": "./output"
+    },
+    "pages": {
+        "ppi": 72,
+        "default": "cr80",
+            "sizes": {
+            "cr80": {
+                "height": 2.125,
+                "width": 3.375,
+                "margin": 0.15
+            }
+        }
+    }
+}
