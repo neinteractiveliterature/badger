@@ -2,10 +2,11 @@
     "app": {
         "name": "Badger",
         "printer": "HP_LaserJet_Professional_P1102w_2",
-        "debug": true,
+        "debug": false,
         "defaultFont": "Helvetica",
         "print": false,
-        "outputDir": "./output"
+        "outputDir": "./output",
+        "dbURL": "postgres://badger:badger@localhost:5432/badger"
     },
     "pages": {
         "ppi": 72,
