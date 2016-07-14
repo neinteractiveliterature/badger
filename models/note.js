@@ -5,7 +5,7 @@ var database = require('../lib/database');
 var validator = require('validator');
 
 exports.get = function(id, cb){
-    var query = 'select * from events where id = $1';
+    var query = 'select * from notes where id = $1';
     database.query(query, [id], function(err, result){
         if (err) { return cb(err); }
         if (result.rows.length){
@@ -15,19 +15,16 @@ exports.get = function(id, cb){
     });
 };
 
-exports.getByName = function(name, cb){
-    var query = 'select * from events where name = $1';
-    database.query(query, [name], function(err, result){
+exports.listByAttendee = function(attendee_id, cb){
+    var query = 'select * from notes where attendee_id = $1';
+    database.query(query, [attendee_id], function(err, result){
         if (err) { return cb(err); }
-        if (result.rows.length){
-            return cb(null, result.rows[0]);
-        }
-        return cb();
+        return cb(null, result.rows);
     });
 };
 
 exports.list = function(cb){
-    var query = 'select * from events';
+    var query = 'select * from notes';
     database.query(query, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
@@ -40,8 +37,8 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into events (name, description, badge) values ($1, $2, $3) returning id';
-    var dataArr = [data.name, data.description, JSON.stringify(data.badge)];
+    var query = 'insert into notes (attendee_id, contents, cleared) values ($1, $2, $3) returning id';
+    var dataArr = [data.attendee_id, data.contents, data.cleared];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows[0].id);
@@ -54,19 +51,17 @@ exports.update =  function(id, data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'update events set name = $2, description = $3, badge = $4 where id = $1';
-    var dataArr = [id, data.name, data.description, JSON.stringify(data.badge)];
+    var query = 'update notes set attendee_id = $2, contents = $3, cleared = $4 where id = $1';
+    var dataArr = [id, data.attendee_id, data.contents, data.cleared];
     database.query(query, dataArr, cb);
 };
 
 exports.delete =  function(id, cb){
-    var query = 'delete from events where id = $1';
+    var query = 'delete from notes where id = $1';
     database.query(query, [id], cb);
 };
 
 function validate(data){
-    if (! validator.isLength(data.name, 2, 255)){
-        return false;
-    }
+
     return true;
 }

@@ -15,9 +15,9 @@ exports.get = function(id, cb){
     });
 };
 
-exports.search = function(text, cb){
-    var query = 'select * from attendees where name like $1 or email like $1';
-    database.query(query, ['%' + text + '%'], function(err, result){
+exports.search = function(event_id, text, cb){
+    var query = 'select * from attendees where name like $1 or email like $1 and event_id = $2';
+    database.query(query, ['%' + text + '%', event_id], function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
     });
@@ -26,6 +26,14 @@ exports.search = function(text, cb){
 exports.list = function(cb){
     var query = 'select * from attendees';
     database.query(query, function(err, result){
+        if (err) { return cb(err); }
+        return cb(null, result.rows);
+    });
+};
+
+exports.listByEvent = function(event_id, cb){
+    var query = 'select * from attendees where event_id = $1';
+    database.query(query, [event_id], function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
     });
@@ -41,7 +49,7 @@ exports.create = function(data, cb){
     var dataArr = [data.name, data.email, data.event_id, data.data];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
-        return cb(null, result.rows[0]);
+        return cb(null, result.rows[0].id);
     });
 };
 

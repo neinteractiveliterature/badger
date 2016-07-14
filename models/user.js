@@ -41,7 +41,7 @@ exports.create = function(data, cb){
     var dataArr = [data.name, data.username, data.password, data.admin];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
-        return cb(null, result.rows[0]);
+        return cb(null, result.rows[0].id);
     });
 };
 

@@ -5,7 +5,18 @@ var database = require('../lib/database');
 var validator = require('validator');
 
 exports.get = function(id, cb){
-    var query = 'select * from events where id = $1';
+    var query = 'select * from importers where id = $1';
+    database.query(query, [id], function(err, result){
+        if (err) { return cb(err); }
+        if (result.rows.length){
+            return cb(null, result.rows[0]);
+        }
+        return cb();
+    });
+};
+
+exports.getByName = function(id, cb){
+    var query = 'select * from importers where name = $1';
     database.query(query, [id], function(err, result){
         if (err) { return cb(err); }
         if (result.rows.length){
@@ -16,7 +27,7 @@ exports.get = function(id, cb){
 };
 
 exports.list = function(cb){
-    var query = 'select * from events';
+    var query = 'select * from importers';
     database.query(query, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
@@ -29,11 +40,11 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into events (name, description) values ($1, $2) returning id';
-    var dataArr = [data.name, data.email, data.event_id, data.data];
+    var query = 'insert into importers (name, rules) values ($1, $2) returning id';
+    var dataArr = [data.name, data.rules];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
-        return cb(null, result.rows[0]);
+        return cb(null, result.rows[0].id);
     });
 };
 
@@ -43,19 +54,17 @@ exports.update =  function(id, data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'update events set name = $2, description = $3 where id = $1';
-    var dataArr = [id, data.name, data.email, data.event_id, data.data, data.checked_in, data.badged];
+    var query = 'update importers set name = $2, rules = $3 where id = $1';
+    var dataArr = [id, data.name, data.rules];
     database.query(query, dataArr, cb);
 };
 
 exports.delete =  function(id, cb){
-    var query = 'delete from events where id = $1';
+    var query = 'delete from importers where id = $1';
     database.query(query, [id], cb);
 };
 
 function validate(data){
-    if (! validator.isLength(data.name, 2, 255)){
-        return false;
-    }
+
     return true;
 }

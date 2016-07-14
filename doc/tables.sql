@@ -82,3 +82,14 @@ create table audits
         ON UPDATE NO ACTION ON DELETE CASCADE
 
 );
+
+create table importers
+(
+    id serial,
+    name character varying (80) not null,
+    rules jsonb,
+    primary key (id),
+    CONSTRAINT importer_name_ukey UNIQUE (name)
+);
+
+insert into importers (name, rules) values ('intercon', '{"attendee":{"name":["FirstName"," ","LastName"],"badgename":"Nickname","type":{"field":"Status","map":{"Alumni":"Unpaid"}},"email":"EMail","pronouns":"Pronouns"},"notes":[{"field":"IsGM","map":{"0":"","1":"Is a GM, gets a patch"}},{"field":"ShirtOrder"}]}');
