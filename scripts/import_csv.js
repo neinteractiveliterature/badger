@@ -13,6 +13,7 @@ var models = {
 
 function die(err){
     if (err){
+        console.log(err.stack);
         console.log(err);
         process.exit(1);
     }
@@ -75,7 +76,7 @@ if (program.events){
         function(dbData, doc, cb){
             csv.parse(doc, {columns: true}, function(err, data){
                 if(err){ die(err); }
-                async.eachLimit(data, 5, function(row, cb){
+                async.eachLimit(data, 1, function(row, cb){
                     program.event_id = dbData.event.id;
                     importer(dbData.importer.rules, row, program, cb);
                 }, function(err){
