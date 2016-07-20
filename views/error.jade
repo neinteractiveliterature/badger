@@ -1,6 +1,7 @@
-extends layout
-
-block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+extends ../node_modules/jade-bootstrap/_bootstrap
+append styles
+    link(href="/css/style.css", rel="stylesheet")
+block body
+    h1= message
+    h2= error.status
+    pre #{error.stack}

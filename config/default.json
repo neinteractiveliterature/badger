@@ -6,7 +6,10 @@
         "defaultFont": "Helvetica",
         "print": false,
         "outputDir": "./output",
-        "dbURL": "postgres://badger:badger@localhost:5432/badger"
+        "dbURL": "postgres://badger:badger@localhost:5432/badger",
+        "sessionType": "local",
+        "sessionSecret": "badger",
+        "defaultEventId": 1
     },
     "pages": {
         "ppi": 72,

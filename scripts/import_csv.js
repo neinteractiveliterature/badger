@@ -99,6 +99,9 @@ function showEvents(cb){
         if (err) { cb(err); }
         _.each(events, function(event){
             console.log('  ' + event.name);
+            if (program.verbose){
+                console.log(JSON.stringify(event.badge, null, 2));
+            }
         });
         console.log();
         cb();
@@ -111,6 +114,9 @@ function showImporters(cb){
         if (err) { cb(err); }
         _.each(importers, function(importer){
             console.log('  ' + importer.name);
+            if (program.verbose){
+                console.log(JSON.stringify(importer.rules, null, 2));
+            }
         });
         console.log();
         cb();

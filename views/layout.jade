@@ -1,7 +1,111 @@
+//- Including Icon mixins
+include ../node_modules/jade-bootstrap/components/icons
+//- Including Alert mixins
+include ../node_modules/jade-bootstrap/components/alerts
+//- Including Tooltip mixins
+include ../node_modules/jade-bootstrap/components/tooltips
+//- Including Accordion mixins
+include ../node_modules/jade-bootstrap/components/accordion
+//- Including Carousel mixins
+include ../node_modules/jade-bootstrap/components/carousel
+//- Including Table mixins
+include ../node_modules/jade-bootstrap/components/tables
+//- Including Navbar mixins
+include ../node_modules/jade-bootstrap/components/navbar
+//- Including Toggle Button mixins
+include ../node_modules/jade-bootstrap/components/toggle
+//- Including Nav mixins
+include ../node_modules/jade-bootstrap/components/navs
+//- Including Label mixins
+include ../node_modules/jade-bootstrap/components/labels
+//- Including Panel mixins
+include ../node_modules/jade-bootstrap/components/panels
+//- Including Tab mixins
+include ../node_modules/jade-bootstrap/components/tabs
+//- Including Dropdown mixins
+include ../node_modules/jade-bootstrap/components/dropdowns
+//- Including Form control mixins
+include ../node_modules/jade-bootstrap/components/forms
+//- Including Modal dialog mixins
+include ../node_modules/jade-bootstrap/components/modal
+//- Including List group mixins
+include ../node_modules/jade-bootstrap/components/list-groups
+//- Including Progress bar mixins
+include ../node_modules/jade-bootstrap/components/progress-bars
+//- Including Button mixins
+include ../node_modules/jade-bootstrap/components/buttons
+//- Including Image mixins
+include ../node_modules/jade-bootstrap/components/images
+//- Including Bootswatch theme mixins
+include ../node_modules/jade-bootstrap/components/bootswatch
+
 doctype html
-html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(http-equiv="X-UA-Compatible", content="IE=edge")
+        meta(name="viewport",content="width=device-width, initial-scale=1")
+        meta(name="description",content="")
+        meta(name="author",content="")
+        link(rel="icon",href="../../favicon.ico")
+        title= title
+        block styles
+            link(rel="stylesheet",href="/stylesheets/vendor/bootstrap.min.css")
+            link(rel='stylesheet', href='/stylesheets/style.css')
+    body(data-spy="scroll",data-target=".scrollspy")
+        nav( role="navigation", class=["navbar","navbar-fixed-top","navbar-inverse"] )
+            .container
+                .navbar-header
+                    button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#' + id, aria-expanded='false', aria-controls='navbar')
+                        span.sr-only Toggle navigation
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                    - var appName = config.get('app.name')
+                    a.navbar-brand(href='/')= appName
+                .collapse.navbar-collapse( id='navbar')
+                    ul.nav.navbar-nav
+                        +nav_item("/","active") Home
+                        - if (checkPermission('login'))
+                            - if (visibleEvents.length > 1)
+                                +nav_item_dropdown('#')(label= session.currentEvent.name)
+                                    for event in visibleEvents
+                                        li: a( href='/events/#{event.id}/select') #{event.name}
+                            - else
+                                +nav_item('#') #{session.currentEvent.name}
+
+                        - if (checkPermission('admin'))
+                            +nav_item("/users") Users
+                            +nav_item("/events") Events
+                            +nav_item("/import") Import
+
+                        - if (checkPermission('login') && checkPermission('access', session.currentEvent.id))
+                            +nav_item("/attendees") Attendees
+
+                    ul.nav.navbar-nav(class='navbar-right')
+
+                        - if (checkPermission('login'))
+                            +nav_item('#')= session.user.name
+                            +nav_item("/logout") Logout
+                        - else
+                            + nav_item('/login') Login
+
+        .container
+            - if (messages.error)
+                +alert-i-danger(messages.error.join(', '))
+
+            - if (messages.info)
+                +alert-i-info(messages.info.join(', '))
+
+            - if (messages.success)
+                +alert-i-success(messages.success.join(', '))
+
+        .container
+            block content
+
+        block scripts
+            script(src="/javascripts/vendor/jquery.min.js")
+            script(src="/javascripts/vendor/bootstrap.min.js")
+            script(src='/javascripts/vendor/typeahead.bundle.min.js')
+            script(src='/javascripts/vendor/handlebars.min.js')
+            script(src='/javascripts/vendor/jquery.jeditable.min.js')

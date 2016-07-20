@@ -3,10 +3,7 @@ var _ = require('underscore');
 var program = require('commander');
 var badge = require('../lib/badge');
 var config = require('config');
-var models = {
-    attendee: require('../models/attendee'),
-    event: require('../models/event'),
-};
+var models = require('../lib/models');
 
 function die(err){
     if (err){

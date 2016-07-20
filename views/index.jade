@@ -1,5 +1,19 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h2 #{session.currentEvent.name} Check in
+  p
+    div(class='row')
+        div(class='col-sm-12')
+            input(type="search" class="typeahead form-control", autocomplete="off", placeholder="Name or Email", id="attendee-search")
+    div(class='row')
+        div(class='col-sm-12')
+            object#attendee-result(type="application/pdf")
+
+
+append scripts
+    script(src='/javascripts/search.js')
+    script.
+        $().ready(function () {
+            $('#attendee-search').focus();
+        });

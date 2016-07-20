@@ -1,0 +1,59 @@
+var express = require('express');
+var router = express.Router();
+var async = require('async');
+var csurf = require('csurf');
+var _ = require('underscore');
+var config = require('config');
+var permission = require('../lib/permission');
+var auth = require('../lib/auth');
+
+
+
+function showLogin(req, res, next){
+    if (req.session.user){
+        return res.redirect('/');
+    }
+
+    res.locals.csrfToken = req.csrfToken();
+    res.locals.auth = {username:null};
+    if (_.has(req.session, 'logindata')){
+        res.locals.auth = req.session.logindata;
+        delete req.session.logindata;
+    }
+    res.render('login');
+}
+
+function postLogin(req, res, next){
+    auth.login(req.body.auth.username, req.body.auth.password, function(err, user){
+        if (err) { return next(err); }
+        if (!user){
+            req.flash('loginerror', 'Invalid Username or Password');
+            req.session.logindata = req.body.auth;
+            res.redirect('/login');
+        } else {
+            req.session.user = user;
+            delete req.session.logindata;
+
+            auth.setCurrentEventId(req, user.current_event_id, function(err){
+                if (err) { return next(err); }
+                if (_.has(req.session, 'backto')){
+                    var backto = req.session.backto;
+                    delete req.session.backto;
+                    res.redirect(backto);
+                } else {
+                    res.redirect('/');
+                }
+            });
+        }
+    });
+}
+
+
+
+
+// Display Login page
+router.get('/', csurf(), showLogin);
+
+router.post('/', csurf(), postLogin);
+
+module.exports = router;
