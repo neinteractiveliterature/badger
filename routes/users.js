@@ -26,6 +26,8 @@ function show(req, res, next){
 router.use(auth.basicAuth);
 router.use(permission('admin'));
 
+router.use(auth.setSection('admin'));
+
 router.get('/', list);
 //router.get('/new', create);
 router.get('/:id', show);

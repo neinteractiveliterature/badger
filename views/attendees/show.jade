@@ -23,17 +23,60 @@ block content
                             th(class="property-name")= field
                 tbody
                     tr
-                        td= attendee.name
-                        td= attendee.email
-                        td= attendee.type
-                        td= attendee.registered?'Yes':'No'
+                        td(id='attendee-#{attendee.id}-name' class='editable-text')= attendee.name
+                        td(id='attendee-#{attendee.id}-email' class='editable-text')= attendee.email
+                        td(id='attendee-#{attendee.id}-type' class='editable-text')= attendee.type
+                        td(id='attendee-#{attendee.id}-registered' class='registered editable-boolean')= attendee.registered?'Yes':'No'
                         td= attendee.checked_id?'Yes':'No'
                         td= attendee.badged?'Yes':'No'
                         for field in session.currentEvent.displayFields
-                            td(class="property-name")= attendee.data[field]
+                            td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
 
     div(class='row')
-        div(class='col-sm-1')
+        div(class='col-sm-1 registered-action')
             button#checkin(class='btn btn-primary') Check In
-        div(class='col-sm-1')
-            button#badge(class='btn btn-default') Badge
+        div(class='col-sm-1 registered-action')
+            button#badge(class='btn btn-default')= attendee.badged?'Badge Again':'Print Badge'
+        div(class='col-sm-1 unregistered-action')
+            button#register(class='btn btn-primary') Register
+
+append scripts
+    script.
+        $('.editable-text').editable('/attendees/', {
+            placeholder: 'Click to set a new value'
+        });
+        $('.editable-boolean').editable('/attendees/', {
+            data   : " {'Yes':'Yes', 'No':'No' }",
+            type   : 'select',
+            onblur : 'submit',
+            callback: showActions
+        });
+        $('.editable-pronouns').editable(function(value, settings){
+            var id = $(this).attr('id');
+            if (value === 'Other'){
+                value = prompt('Please enter value')
+            }
+            $.post('/attendees/', {id: id, value:value}, function(data){
+                $(id).text(data);
+            });
+            return (value);
+
+        }, {
+            cssclass: 'edit-pronouns',
+            loadurl: '/pronouns',
+            type   : 'select',
+            submit : 'OK'
+        });
+        showActions();
+
+        function showActions(){
+            var registered = $('.registered').text();
+            if (registered === 'Yes'){
+                $('.registered-action').show();
+                $('.unregistered-action').hide();
+            } else {
+                $('.registered-action').hide();
+                $('.unregistered-action').show();
+            }
+        }
+

@@ -1,10 +1,17 @@
 body {
-  padding: 70px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 50px;
+  font-size: 12px
 }
 
 a {
   color: #00B7FF;
+}
+
+.row-spacer {
+  margin-top:30px;
+}
+.navbar{
+  font-size: 14px;
 }
 
 
@@ -91,6 +98,16 @@ a {
 #attendee-result {
   width:253px;
   height:220px;
+}
+.ts-pager .btn:not(:last-child),
+.ts-pager select:not(:last-child),
+.ts-pager span
+{
+  margin-right:3px;
+}
 
-
+.attendee-search{
+  -webkit-border-radius: 16px;
+     -moz-border-radius: 16px;
+          border-radius: 16px;
 }

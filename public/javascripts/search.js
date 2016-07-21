@@ -24,7 +24,7 @@ $().ready(function () {
     });
     var suggestionTemplate = '<strong>{{name}}</strong> – <small>{{email}}</small> ( {{type}} )';
 
-    $('.typeahead').typeahead(null, {
+    $('.attendee-search').typeahead(null, {
         name: 'attendees',
         hint: true,
         highlight: true,
@@ -38,5 +38,7 @@ $().ready(function () {
     }).on('typeahead:select', function(e, item){
         window.location.href='/attendees/' + item.id;
     });
+
+    setTimeout("$('.attendee-search').focus();", 0)
 
 });

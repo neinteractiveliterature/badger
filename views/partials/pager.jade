@@ -1,0 +1,21 @@
+mixin pager()
+    tr
+        th(colspan=999 class='ts-pager form-inline')
+            button(type='button', class='btn first')
+                i(class='glyphicon glyphicon-step-backward')
+            button(type='button', class='btn prev')
+                i(class='glyphicon glyphicon-backward')
+            span(class="pagedisplay")
+            button(type='button', class='btn next')
+                i(class='glyphicon glyphicon-forward')
+            button(type='button', class='btn last')
+                i(class='glyphicon glyphicon-step-forward')
+            select(class='pagesize form-control',title='select page size')
+                option(selected value=15) 15
+                option(value=30) 30
+                option(value=60) 60
+                option(value=100) 100
+            select(class='pagenum form-control',title='Select page number')
+            button(type='button', class='btn btn-primary reset')
+                i(class='glyphicon glyphicon-default')
+                |  Reset Filters

@@ -89,8 +89,32 @@ function checkIn(req, res, next){
     });
 }
 
+function updateAttendee(req, res, next){
+    var value = req.body.value;
+    var parts = req.body.id.split('-');
+    var id = parts[1];
+    var field = parts[2];
+    var datafield;
+    if (field === 'data'){
+        datafield = parts[3];
+    }
+    req.models.attendee.get(id, function(err, attendee){
+        if (err) { return next(err); }
+        if (field === 'data'){
+            attendee.data[parts[3]] = value;
+        } else {
+            attendee[field] = value;
+        }
+        req.models.attendee.update(id, attendee, function(err){
+            if (err) { return next(err); }
+            res.status(200).send(value);
+        });
+    });
+}
+
 router.use(auth.basicAuth);
 router.use(permission('access'));
+router.use(auth.setSection('attendees'));
 
 router.get('/search', search);
 router.get('/', list);
@@ -100,5 +124,7 @@ router.get('/:id', get);
 router.get('/:id/badge', printBadge);
 router.get('/:id/showBadge', showBadge);
 router.get('/:id/checkin', checkIn);
+
+router.post('/', updateAttendee);
 
 module.exports = router;

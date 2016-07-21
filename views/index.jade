@@ -5,7 +5,7 @@ block content
   p
     div(class='row')
         div(class='col-sm-12')
-            input(type="search" class="typeahead form-control", autocomplete="off", placeholder="Name or Email", id="attendee-search")
+            input(type="search" class="attendee-search form-control", autocomplete="off", placeholder="Name or Email")
     div(class='row')
         div(class='col-sm-12')
             object#attendee-result(type="application/pdf")
@@ -13,7 +13,4 @@ block content
 
 append scripts
     script(src='/javascripts/search.js')
-    script.
-        $().ready(function () {
-            $('#attendee-search').focus();
-        });
+

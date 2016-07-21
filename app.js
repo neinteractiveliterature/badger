@@ -19,7 +19,7 @@ var login = require('./routes/login');
 var logout = require('./routes/logout');
 var events = require('./routes/events');
 var attendees = require('./routes/attendees');
-
+var pronouns = require('./routes/pronouns');
 
 
 var app = express();
@@ -111,6 +111,8 @@ app.use('/events', events);
 app.use('/api/events', events);
 app.use('/attendees', attendees);
 app.use('/api/attendees', attendees);
+app.use('/pronouns', pronouns);
+app.use('/api/pronouns', pronouns);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

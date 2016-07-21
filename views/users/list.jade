@@ -2,7 +2,7 @@ extends ../layout
 
 block content
     h2 Users List
-    table(class='table table-striped table-condensed')
+    table(class='table table-striped table-condensed table-sorted table-hover')
         thead
             tr
                 th Name
@@ -11,7 +11,7 @@ block content
                 th Events
         tbody
             for user in users
-                tr
+                tr(class='clickable-row', data-click-object='users' data-click-id='#{user.id}')
                     td
                         a(href='/users/#{user.id}')= user.name
                     td= user.username
@@ -20,3 +20,9 @@ block content
                         ul
                             for event in user.events
                                 li #{event.name}: #{event.admin?'Admin':'User'}
+        tfoot
+            +pager
+
+
+append scripts
+    script(src='/javascripts/data-table.js')
