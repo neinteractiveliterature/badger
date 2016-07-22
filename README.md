@@ -1,4 +1,4 @@
-# badger
+# Badger
 a badge printing server for conventions
 
 This software is meant to be run on a print server, connected to at least one badge printer in order to run check-in for a convention.  It has no dependncy on the internet after install time, so it can be run in a off-line environment.
