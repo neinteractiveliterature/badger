@@ -4,6 +4,7 @@ var permission = require('../lib/permission');
 var auth = require('../lib/auth');
 var _ = require('underscore');
 var badge = require('../lib/badge');
+var badgerHelper = require('../lib/badger-helper');
 
 function search(req, res, next){
     var query = req.query.query;
@@ -39,25 +40,32 @@ function listRegistered(req, res, next){
 }
 
 function get(req, res, next){
-    req.models.attendee.get(req.params.id, function(err, attendee){
+    var attendee_id = req.params.id;
+    req.models.attendee.get(attendee_id, function(err, attendee){
         if (err) { return next(err); }
         if (req.originalUrl.match(/\/api\//)){
             res.json(attendee);
         } else {
             res.locals.attendee = attendee;
-            res.render('attendees/show');
+            req.getAudits('attendee', attendee_id, function(err, audits){
+                if (err) { return next(err); }
+                res.locals.audits = audits;
+                res.render('attendees/show');
+            });
         }
     });
 }
 
 function printBadge(req, res, next){
-    req.models.attendee.get(req.params.id, function(err, attendee){
+    var attendee_id = req.params.id;
+    req.models.attendee.get(attendee_id, function(err, attendee){
         if (err) { return next(err); }
         badge.print(req.session.currentEvent.badge, attendee, function(err){
             if (err){ return next(err); }
             attendee.badged = true;
-            req.models.attendee(attendee.id, attendee, function(err){
+            req.models.attendee.update(attendee.id, attendee, function(err){
                 if (err){ return next(err); }
+                req.audit('badge', 'attendee', attendee_id);
                 res.json({success:true});
             });
         });
@@ -65,13 +73,14 @@ function printBadge(req, res, next){
 }
 
 function showBadge(req, res, next){
-    var event_id = req.session.currentEvent.id;
     var attendee_id = req.params.id;
     req.models.attendee.get(attendee_id, function(err, attendee){
         if (err) { return next(err); }
         badge.print(req.session.currentEvent.badge, attendee, {display:true}, function(err, badge){
             if (err){ return next(err); }
-            //res.attachment(attendee.name + '.pdf');
+            if (req.query.download){
+                res.attachment(attendee.name + '.pdf');
+            }
             res.set('Content-Type', 'application/pdf');
             res.send(badge);
         });
@@ -79,11 +88,13 @@ function showBadge(req, res, next){
 }
 
 function checkIn(req, res, next){
-    req.models.attendee.get(req.params.id, function(err, attendee){
+    var attendee_id = req.params.id;
+    req.models.attendee.get(attendee_id, function(err, attendee){
         if (err) { return next(err); }
         attendee.checked_in = true;
         req.models.attendee(attendee.id, attendee, function(err){
             if (err){ return next(err); }
+            req.audit('checkin', 'attendee', attendee_id);
             res.json({success:true});
         });
     });
@@ -94,27 +105,52 @@ function updateAttendee(req, res, next){
     var parts = req.body.id.split('-');
     var id = parts[1];
     var field = parts[2];
+    var fieldName = field;
     var datafield;
+
     if (field === 'data'){
         datafield = parts[3];
+        fieldName = 'data.' + datafield;
     }
+    var storeValue = value;
+    if (field === 'registered' ||
+        field === 'checked_in' ||
+        field === 'badged' ||
+        (field==='data' && req.session.currentEvent.importer.rules.attendee[datafield].type === 'boolean')){
+        if (value === 'Yes'){
+            storeValue = true;
+        } else if (value === 'No'){
+            storeValue = false;
+        }
+    }
+
     req.models.attendee.get(id, function(err, attendee){
         if (err) { return next(err); }
+        var oldValue = null;
         if (field === 'data'){
-            attendee.data[parts[3]] = value;
+            oldValue = attendee.data[datafield];
+            if (oldValue === storeValue){
+                return res.status(200).send(value.toString());
+            }
+            attendee.data[datafield] = storeValue;
         } else {
-            attendee[field] = value;
+            oldValue = attendee[field];
+            if (oldValue === storeValue){
+                return res.status(200).send(value.toString());
+            }
+            attendee[field] = storeValue;
         }
         req.models.attendee.update(id, attendee, function(err){
             if (err) { return next(err); }
-            res.status(200).send(value);
+            req.audit('update', 'attendee', id, {field: fieldName, old: oldValue, new: storeValue});
+            res.status(200).send(value.toString());
         });
     });
 }
 
 router.use(auth.basicAuth);
 router.use(permission('access'));
-router.use(auth.setSection('attendees'));
+router.use(badgerHelper.setSection('attendees'));
 
 router.get('/search', search);
 router.get('/', list);

@@ -26,19 +26,48 @@ block content
                         td(id='attendee-#{attendee.id}-name' class='editable-text')= attendee.name
                         td(id='attendee-#{attendee.id}-email' class='editable-text')= attendee.email
                         td(id='attendee-#{attendee.id}-type' class='editable-text')= attendee.type
-                        td(id='attendee-#{attendee.id}-registered' class='registered editable-boolean')= attendee.registered?'Yes':'No'
-                        td= attendee.checked_id?'Yes':'No'
-                        td= attendee.badged?'Yes':'No'
+                        td(id='attendee-#{attendee.id}-registered' class='registered')= attendee.registered?'Yes':'No'
+                        td(class='checked-in')= attendee.checked_id?'Yes':'No'
+                        td(class='badged')= attendee.badged?'Yes':'No'
                         for field in session.currentEvent.displayFields
                             td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
 
     div(class='row')
-        div(class='col-sm-1 registered-action')
-            button#checkin(class='btn btn-primary') Check In
-        div(class='col-sm-1 registered-action')
-            button#badge(class='btn btn-default')= attendee.badged?'Badge Again':'Print Badge'
-        div(class='col-sm-1 unregistered-action')
-            button#register(class='btn btn-primary') Register
+        div(class='btn-toolbar col-sm-12')
+
+
+            button#checkin(class='btn btn-primary registered-action btn-checkin') Check In
+
+            button#badge(class='btn btn-default registered-action btn-badge')= attendee.badged?'Badge Again':'Print Badge'
+
+            button#register(class='btn btn-default registered-action btn-unregister') Unregister
+
+            button#register(class='btn btn-primary unregistered-action btn-register') Register
+
+    -if (audits.length && checkPermission('eventadmin'))
+        h3 History
+        div(class='row')
+            div(class='col-sm-12')
+                table(class='table table-striped table-condensed')
+                    thead
+                        tr
+                            th ID
+                            th Timestamp
+                            th User
+                            th Action
+                            th Field
+                            th Old Data
+                            th New Data
+                    tbody
+                        for audit in audits
+                            tr
+                                td= audit.id
+                                td= moment(audit.created).format('MMMM DD YYYY, HH:mm:ss')
+                                td= audit.user
+                                td= audit.action
+                                td= _.has(audit.data, 'field')?audit.data.field:'N/A'
+                                td= _.has(audit.data, 'old')?audit.data.old:''
+                                td= _.has(audit.data, 'new')?audit.data.new:''
 
 append scripts
     script.
@@ -71,6 +100,23 @@ append scripts
 
         function showActions(){
             var registered = $('.registered').text();
+            var badged = $('.badged').text();
+            var checkedIn = $('.checked-in').text();
+
+            if (checkedIn === 'Yes'){
+                $('.btn-checkin').hide();
+                $('.btn-unregister').hide();
+            } else {
+                $('.btn-checkin').show();
+                $('.btn-unregister').show();
+            }
+
+            if (badged === 'Yes'){
+                $('.btn-badge').text('Badge Again');
+            } else {
+                $('.btn-badge').text('Print Badge');
+            }
+
             if (registered === 'Yes'){
                 $('.registered-action').show();
                 $('.unregistered-action').hide();
@@ -78,5 +124,6 @@ append scripts
                 $('.registered-action').hide();
                 $('.unregistered-action').show();
             }
+
         }
 

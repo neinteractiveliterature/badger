@@ -72,14 +72,14 @@ html(lang="en")
 
                 .collapse.navbar-collapse( id='navbar')
                     ul.nav.navbar-nav
-                        +nav_item("/",siteSection==='search'?"active":null)
-                            i(class='glyphicon glyphicon-search')
-                            |  Search
-
                         - if (checkPermission('login') && checkPermission('access', session.currentEvent.id))
+                            +nav_item("/",siteSection==='search'?"active":null)
+                                i(class='glyphicon glyphicon-search')
+                                |  Search
                             +nav_item("/attendees", siteSection==='attendees'?"active":null)
                                 i(class='glyphicon glyphicon-user')
                                 |  Attendees
+
 
                         - if (checkPermission('login'))
                             - if (visibleEvents.length > 1)

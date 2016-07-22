@@ -1,13 +1,15 @@
 var express = require('express');
-var router = express.Router();
-var auth = require('../lib/auth');
-var permission = require('../lib/permission');
 var async = require('async');
 var _ = require('underscore');
 
+var router = express.Router();
+var auth = require('../lib/auth');
+var permission = require('../lib/permission');
+var badgerHelper = require('../lib/badger-helper');
+
 function selectEvent(req, res, next){
     var event_id = req.params.id;
-    auth.setCurrentEventId(req, event_id, function(err){
+    badgerHelper.setCurrentEventId(req, event_id, function(err){
         if (err) { return next(err); }
         res.redirect('/');
     });
@@ -36,7 +38,7 @@ function list(req, res, next){
 
 router.use(auth.basicAuth);
 router.use(permission('login'));
-router.use(auth.setSection('admin'));
+router.use(badgerHelper.setSection('admin'));
 
 /* select a new event. */
 router.get('/', permission('admin'), list);

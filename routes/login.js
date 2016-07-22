@@ -6,7 +6,7 @@ var _ = require('underscore');
 var config = require('config');
 var permission = require('../lib/permission');
 var auth = require('../lib/auth');
-
+var badgerHelper = require('../lib/badger-helper');
 
 
 function showLogin(req, res, next){
@@ -34,7 +34,7 @@ function postLogin(req, res, next){
             req.session.user = user;
             delete req.session.logindata;
 
-            auth.setCurrentEventId(req, user.current_event_id, function(err){
+            badgerHelper.setCurrentEventId(req, user.current_event_id, function(err){
                 if (err) { return next(err); }
                 if (_.has(req.session, 'backto')){
                     var backto = req.session.backto;

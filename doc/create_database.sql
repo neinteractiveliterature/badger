@@ -1,0 +1,10 @@
+CREATE USER badger WITH PASSWORD 'badger';
+
+CREATE DATABASE badger
+   WITH OWNER badger
+   TEMPLATE template0
+   ENCODING 'SQL_ASCII'
+   TABLESPACE  pg_default
+   LC_COLLATE  'C'
+   LC_CTYPE  'C'
+   CONNECTION LIMIT  -1;

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var permission = require('../lib/permission');
 var auth = require('../lib/auth');
+var badgerHelper = require('../lib/badger-helper');
 var _ = require('underscore');
 
 
@@ -26,7 +27,7 @@ function show(req, res, next){
 router.use(auth.basicAuth);
 router.use(permission('admin'));
 
-router.use(auth.setSection('admin'));
+router.use(badgerHelper.setSection('admin'));
 
 router.get('/', list);
 //router.get('/new', create);

@@ -8,10 +8,12 @@ var flash = require('express-flash');
 var session = require('express-session');
 var config = require('config');
 var _ = require('underscore');
+var moment = require('moment');
 
 
 var models = require('./lib/models');
 var permission = require('./lib/permission');
+var auditor = require('./lib/auditor');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -62,6 +64,7 @@ app.use(session(sessionConfig));
 
 app.use(flash());
 app.use(permission());
+app.use(auditor.middleware);
 
 app.use(function(req, res, next){
   req.models = models;
@@ -74,6 +77,7 @@ app.use(function(req, res, next){
     res.locals.session = req.session;
     res.locals.title = config.get('app.name');
     res.locals._ = _;
+    res.locals.moment = moment;
     next();
 });
 
@@ -102,7 +106,6 @@ app.use(function(req, res, next){
     });
 })
 
-
 app.use('/', routes);
 app.use('/login', login);
 app.use('/logout', logout);
@@ -127,6 +130,7 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
+    console.log(err);
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,

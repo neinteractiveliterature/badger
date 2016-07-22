@@ -11,7 +11,7 @@ block content
                 th Importer
         tbody
             for event in events
-                tr(class='clickable-row', data-click-object='events' data-click-id='#{event.id}'))
+                tr(class='clickable-row', data-click-object='events' data-click-id='#{event.id}')
                     td= event.id
                     td
                         a(href='/events/#{event.id}')= event.name
