@@ -5,6 +5,7 @@ var auth = require('../lib/auth');
 var _ = require('underscore');
 var badge = require('../lib/badge');
 var badgerHelper = require('../lib/badger-helper');
+var async = require('async');
 
 function search(req, res, next){
     var query = req.query.query;
@@ -87,16 +88,94 @@ function showBadge(req, res, next){
     });
 }
 
-function checkIn(req, res, next){
+function register(req, res, next){
     var attendee_id = req.params.id;
     req.models.attendee.get(attendee_id, function(err, attendee){
         if (err) { return next(err); }
-        attendee.checked_in = true;
-        req.models.attendee(attendee.id, attendee, function(err){
+        if (attendee.registered === true){
+            return res.json({success:true});
+        }
+        attendee.registered = true;
+        req.models.attendee.update(attendee.id, attendee, function(err){
             if (err){ return next(err); }
-            req.audit('checkin', 'attendee', attendee_id);
+            req.audit('register', 'attendee', attendee_id);
             res.json({success:true});
         });
+    });
+}
+
+function unregister(req, res, next){
+    var attendee_id = req.params.id;
+    req.models.attendee.get(attendee_id, function(err, attendee){
+        if (err) { return next(err); }
+        if (attendee.registered === false){
+            return res.json({success:true});
+        }
+        attendee.registered = false;
+        req.models.attendee.update(attendee.id, attendee, function(err){
+            if (err){ return next(err); }
+            req.audit('unregister', 'attendee', attendee_id);
+            res.json({success:true});
+        });
+    });
+}
+
+function checkIn(req, res, next){
+    var attendee_id = req.params.id;
+    var attendeeData;
+    async.waterfall([
+        function(cb){
+            req.models.attendee.get(attendee_id, cb);
+        },
+        function(attendee, cb){
+            if (attendee_id.checked_in === true){
+                if (req.originalUrl.match(/\/api\//)){
+                    res.json({success:true});
+                } else {
+                    req.flash('success', attendeeData.name + ' is already checked in');
+                    res.redirect('/attendees/' + attendee_id);
+                }
+             }
+            attendee.checked_in = true;
+
+            attendeeData = attendee;
+            req.models.attendee.update(attendee_id, attendee, cb);
+        },
+        function(attendee, cb){
+            req.audit('checkin', 'attendee', attendee_id, cb);
+        },
+        function(log_id, cb){
+            console.log(req.query.badge);
+            if (req.query.badge){
+                async.series([
+                    function(cb){
+                        badge.print(req.session.currentEvent.badge, attendeeData, cb);
+                    },
+                    function(cb){
+                        attendeeData.badged = true;
+                        req.models.attendee.update(attendee_id, attendeeData, cb);
+                    },
+                    function(cb){
+                        req.audit('badge', 'attendee', attendee_id, cb);
+                    }
+                ], cb);
+            } else {
+                process.nextTick(cb);
+            }
+        }
+    ], function(err){
+        if (err) { return next(err); }
+        if (req.originalUrl.match(/\/api\//)){
+            res.json({success:true});
+        } else {
+            if (req.query.badge){
+                req.flash('success', 'Checked in and Badged '+ attendeeData.name);
+                res.redirect('/');
+            } else {
+                req.flash('success', 'Checked in'+ attendeeData.name);
+                res.redirect('/attendees' + attendee_id);
+            }
+        }
     });
 }
 
@@ -157,9 +236,12 @@ router.get('/', list);
 router.get('/listRegistered', listRegistered);
 
 router.get('/:id', get);
-router.get('/:id/badge', printBadge);
 router.get('/:id/showBadge', showBadge);
-router.get('/:id/checkin', checkIn);
+
+router.post('/:id/badge', printBadge);
+router.post('/:id/checkin', checkIn);
+router.post('/:id/register', register);
+router.post('/:id/unregister', unregister);
 
 router.post('/', updateAttendee);
 

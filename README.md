@@ -23,6 +23,7 @@ It supports
 * Import attendee data from CSV
     * via CLI tool
     * via Website (in progress)
+* Per-attendee check-in notes
 * Add attendees at the door (in progress)
 * Simple search interface for checking in attendees
 * Search/filter/sortable lists for attendees, users, events
@@ -40,3 +41,8 @@ It supports
 # pm2 start badger.pm2.json
 # pm2 save
 ```
+
+## TODO
+* All of the above marked in progress
+* breadcrumbs
+* support imported ids?

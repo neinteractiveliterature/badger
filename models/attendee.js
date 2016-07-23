@@ -75,7 +75,6 @@ exports.update =  function(id, data, cb){
     }
     var query = 'update attendees set name = $2, email = $3, event_id = $4, data = $5, checked_in = $6, badged = $7, registered = $8, type = $9 where id = $1';
     var dataArr = [id, data.name, data.email, data.event_id, data.data, data.checked_in, data.badged, data.registered, data.type];
-
     database.query(query, dataArr, cb);
 };
 

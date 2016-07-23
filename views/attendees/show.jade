@@ -2,11 +2,7 @@ extends ../layout
 
 block content
     h2=attendee.name
-    for note in attendee.notes
-        .alert.alert-dismissible(role="alert",class="alert-info")
-            button.close(type="button",data-dismiss="alert" aria-label="Close")
-                span(aria-hidden="true")  &times;
-            =note.contents
+    div(class="alert alert-info",id="alert-messages")
 
     div(class='row')
         div(class='col-sm-12')
@@ -23,26 +19,36 @@ block content
                             th(class="property-name")= field
                 tbody
                     tr
-                        td(id='attendee-#{attendee.id}-name' class='editable-text')= attendee.name
-                        td(id='attendee-#{attendee.id}-email' class='editable-text')= attendee.email
-                        td(id='attendee-#{attendee.id}-type' class='editable-text')= attendee.type
+                        td(id='attendee-#{attendee.id}-name' class='editable editable-text')= attendee.name
+                        td(id='attendee-#{attendee.id}-email' class='editable editable-text')= attendee.email
+                        td(id='attendee-#{attendee.id}-type' class='editable editable-text')= attendee.type
                         td(id='attendee-#{attendee.id}-registered' class='registered')= attendee.registered?'Yes':'No'
-                        td(class='checked-in')= attendee.checked_id?'Yes':'No'
-                        td(class='badged')= attendee.badged?'Yes':'No'
+                        td(id='attendee-#{attendee.id}-checked-in' class='checked-in')= attendee.checked_in?'Yes':'No'
+                        td(id='attendee-#{attendee.id}-badged' class='badged')= attendee.badged?'Yes':'No'
                         for field in session.currentEvent.displayFields
-                            td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
+                            td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
+
+    for note in attendee.notes
+        .alert.alert-dismissible(role="alert",class="alert-info")
+            button.close(type="button",data-dismiss="alert" aria-label="Close")
+                span(aria-hidden="true")  &times;
+            =note.contents
 
     div(class='row')
-        div(class='btn-toolbar col-sm-12')
+        div(class='col-sm-12')
 
+            div(class='registered-actions btn-toolbar')
+                form(method="POST", action="/attendees/#{attendee.id}/checkin?badge=true", id='check-in-and-badge-form')
+                    button#checkin(class='btn btn-primary btn-checkin-badge' data-id="#{attendee.id}") <u>C</u>heck In and Badge
 
-            button#checkin(class='btn btn-primary registered-action btn-checkin') Check In
+                button#badge(class='btn btn-default btn-checkin' data-id="#{attendee.id}") Check <u>I</u>n
 
-            button#badge(class='btn btn-default registered-action btn-badge')= attendee.badged?'Badge Again':'Print Badge'
+                button#badge(class='btn btn-default btn-badge' data-id="#{attendee.id}")= attendee.badged?'<u>B</u>adge Again':'Print <u>B</u>adge'
 
-            button#register(class='btn btn-default registered-action btn-unregister') Unregister
+                button#register(class='btn btn-default btn-unregister' data-id="#{attendee.id}") <u>U</u>nregister
 
-            button#register(class='btn btn-primary unregistered-action btn-register') Register
+            div(class="unregistered-actions btn-toolbar")
+                button#register(class='btn btn-primary btn-register' data-id="#{attendee.id}") <u>R</u>egister
 
     -if (audits.length && checkPermission('eventadmin'))
         h3 History
@@ -70,15 +76,31 @@ block content
                                 td= _.has(audit.data, 'new')?audit.data.new:''
 
 append scripts
+    script(src="/javascripts/alerts.js")
     script.
+
+        allowKeypress = true;
+        showActions();
+
+        $('.editable').on('click', function(){
+            allowKeypress = false;
+        });
+
+
         $('.editable-text').editable('/attendees/', {
-            placeholder: 'Click to set a new value'
+            placeholder: 'Click to set a new value',
+            callback: function(){
+                allowKeypress = true;
+            }
         });
         $('.editable-boolean').editable('/attendees/', {
             data   : " {'Yes':'Yes', 'No':'No' }",
             type   : 'select',
             onblur : 'submit',
-            callback: showActions
+            callback: function(){
+                allowKeyPress = true;
+                showActions();
+            }
         });
         $('.editable-pronouns').editable(function(value, settings){
             var id = $(this).attr('id');
@@ -94,9 +116,18 @@ append scripts
             cssclass: 'edit-pronouns',
             loadurl: '/pronouns',
             type   : 'select',
-            submit : 'OK'
+            submit : 'OK',
+            callback: function(){
+                allowKeypress = true;
+            }
         });
-        showActions();
+
+        // $('.btn-checkin-badge').click(checkInAndBadge);
+
+        $('.btn-checkin').click(checkIn);
+        $('.btn-register').click(register);
+        $('.btn-unregister').click(unregister);
+        $('.btn-badge').click(badge);
 
         function showActions(){
             var registered = $('.registered').text();
@@ -104,26 +135,130 @@ append scripts
             var checkedIn = $('.checked-in').text();
 
             if (checkedIn === 'Yes'){
+                $('.btn-checkin-badge').hide();
                 $('.btn-checkin').hide();
                 $('.btn-unregister').hide();
             } else {
+                $('.btn-checkin-badge').show();
                 $('.btn-checkin').show();
                 $('.btn-unregister').show();
             }
 
             if (badged === 'Yes'){
-                $('.btn-badge').text('Badge Again');
+                $('.btn-badge').html('<u>B</u>adge Again');
             } else {
-                $('.btn-badge').text('Print Badge');
+                $('.btn-badge').html('Print <u>B</u>adge');
             }
 
             if (registered === 'Yes'){
-                $('.registered-action').show();
-                $('.unregistered-action').hide();
+                $('.registered-actions').show();
+                $('.unregistered-actions').hide();
             } else {
-                $('.registered-action').hide();
-                $('.unregistered-action').show();
+                $('.registered-actions').hide();
+                $('.unregistered-actions').show();
             }
 
+        }
+        var metaHeld = false;
+
+        $(document).keydown(function(event){
+
+            var keycode = event.which;
+
+            if (keycode < 65 || keycode >90){
+                metaHeld = true;
+            }
+            if (allowKeypress && !metaHeld){
+                console.log(keycode);
+
+                if(keycode === 67){ // c
+                    $('#check-in-and-badge-form').submit();
+                } else if ( keycode === 66) { // b
+                    badge();
+                } else if ( keycode === 73) { // i
+                    checkIn();
+                } else if (keycode === 85) { // u
+                    unregister();
+                } else if ( keycode === 82) { // r
+                    register();
+                }
+            }
+        });
+
+        $(document).keyup(function(event){
+
+            var keycode = event.which;
+
+            if (keycode < 65 || keycode >90){
+                metaHeld = false;
+            }
+        });
+
+        function checkIn(){
+            if ($('#attendee-'+id+'-checked-in').text() === 'Yes'){
+                return;
+            }
+            var id = $('.btn-checkin').attr('data-id');
+            $.ajax({
+                method:'POST',
+                url: '/api/attendees/' + id + '/checkin',
+                success: function(data){
+                    if (data.success){
+                        $('#attendee-'+id+'-checked-in').text('Yes');
+                        showActions();
+                        showAlert('success', 'Checked In');
+                    }
+                }
+            });
+        }
+
+        function badge(){
+            var id = $('.btn-badge').attr('data-id');
+            console.log('badging');
+            $.ajax({
+                method: 'POST',
+                url: '/api/attendees/' + id + '/badge',
+                success: function(data){
+                    if (data.success){
+                        $('#attendee-'+id+'-badged').text('Yes');
+                        showActions();
+                        showAlert('success','Printed Badge');
+                    }
+                }
+            });
+        }
+        function register(){
+            var id = $('.btn-register').attr('data-id');
+            if ($('#attendee-'+id+'-registered').text() === 'Yes'){
+                return;
+            }
+            $.ajax({
+                method: 'POST',
+                url: '/api/attendees/' + id + '/register',
+                success: function(data){
+                    if (data.success){
+                        $('#attendee-'+id+'-registered').text('Yes');
+                        showActions();
+                        showAlert('success','Registered');
+                    }
+                }
+            });
+        }
+        function unregister(){
+            var id = $('.btn-unregister').attr('data-id');
+            if ($('#attendee-'+id+'-registered').text() === 'No'){
+                return;
+            }
+            $.ajax({
+                method: 'POST',
+                url: '/api/attendees/' + id + '/unregister',
+                success: function(data){
+                    if (data.success){
+                        $('#attendee-'+id+'-registered').text('No');
+                        showActions();
+                        showAlert('success','Unregistered');
+                    }
+                }
+            });
         }
 
