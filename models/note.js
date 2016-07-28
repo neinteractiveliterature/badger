@@ -23,6 +23,14 @@ exports.listByAttendee = function(attendee_id, cb){
     });
 };
 
+exports.listByEvent = function(event_id, cb){
+    var query = 'select * from notes where attendee_id in (select id from attendees where event_id = $1)';
+    database.query(query, [attendee_id], function(err, result){
+        if (err) { return cb(err); }
+        return cb(null, result.rows);
+    });
+}
+
 exports.list = function(cb){
     var query = 'select * from notes';
     database.query(query, function(err, result){

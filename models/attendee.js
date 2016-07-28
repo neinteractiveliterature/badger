@@ -53,6 +53,23 @@ exports.listByEvent = function(event_id, cb){
     });
 };
 
+exports.listTypes = function(cb){
+    var query = 'select distinct type from attendees';
+    database.query(query, function(err, result){
+        if (err) { return cb(err); }
+
+        return cb(null, _.pluck(result.rows, 'type'));
+    });
+};
+
+exports.listTypesByEvent = function(event_id, cb){
+    var query = 'select distinct type from attendees where event_id = $1';
+    database.query(query, [event_id], function(err, result){
+        if (err) { return cb(err); }
+        return cb(null, _.pluck(result.rows, 'type'));
+    });
+};
+
 exports.create = function(data, cb){
     if (! validate(data)){
         return process.nextTick(function(){

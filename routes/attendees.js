@@ -6,6 +6,7 @@ var _ = require('underscore');
 var badge = require('../lib/badge');
 var badgerHelper = require('../lib/badger-helper');
 var async = require('async');
+var csurf = require('csurf');
 
 function search(req, res, next){
     var query = req.query.query;
@@ -42,17 +43,33 @@ function listRegistered(req, res, next){
 
 function get(req, res, next){
     var attendee_id = req.params.id;
+    if (req.query.from && req.query.from === 'search'){
+        res.locals.from = 'search';
+        res.locals.siteSection = 'search';
+    } else {
+        res.locals.from = 'attendees';
+    }
     req.models.attendee.get(attendee_id, function(err, attendee){
         if (err) { return next(err); }
+
         if (req.originalUrl.match(/\/api\//)){
-            res.json(attendee);
+            if (attendee){
+                res.json(attendee);
+            } else {
+                res.status(404).json({});
+            }
         } else {
-            res.locals.attendee = attendee;
-            req.getAudits('attendee', attendee_id, function(err, audits){
-                if (err) { return next(err); }
-                res.locals.audits = audits;
-                res.render('attendees/show');
-            });
+            if (attendee){
+                res.locals.attendee = attendee;
+                req.getAudits('attendee', attendee_id, function(err, audits){
+                    if (err) { return next(err); }
+                    res.locals.audits = audits;
+                    res.render('attendees/show');
+                });
+            } else {
+                res.flash('danger', 'Attendee not found');
+                res.redirect('/');
+            }
         }
     });
 }
@@ -227,6 +244,91 @@ function updateAttendee(req, res, next){
     });
 }
 
+function showNew(req, res, next){
+    if (req.query.from && req.query.from === 'search'){
+        res.locals.from = 'search';
+        res.locals.siteSection = 'search';
+    } else {
+        res.locals.from = 'attendees';
+    }
+
+    res.locals.csrfToken = req.csrfToken();
+    res.locals.attendee = {
+        name: null,
+        email: null,
+        data: {},
+        type: null,
+    };
+    if (_.has(req.session, 'attendeeData')){
+        res.locals.attendee = req.session.attendeeData;
+        delete req.session.attendeeData;
+    }
+    async.parallel({
+        types: function(cb){
+            req.models.attendee.listTypesByEvent(req.session.currentEvent.id, cb);
+        },
+        pronouns: function(cb){
+            req.models.pronoun.list(cb);
+        },
+    }, function(err, result){
+        if (err) { return next(err); }
+        res.locals.types = result.types;
+        res.locals.pronouns = result.pronouns;
+        res.render('attendees/new');
+    });
+}
+
+function create(req, res, next){
+    var attendee = req.body.attendee;
+    // todo - validation and move data in to data object
+    var doc = {
+        name: attendee.name,
+        email: attendee.email,
+        event_id: req.session.currentEvent.id,
+        type: attendee.type === 'Other'? attendee.usertype : attendee.type,
+        data: {}
+    };
+
+    for ( var fieldName in req.session.currentEvent.importer.rules.attendee ){
+        var field = req.session.currentEvent.importer.rules.attendee[fieldName];
+        if (field.type === 'email'){
+            doc.data[fieldName] = doc.email;
+        } else if (field.type === 'type'){
+            doc.data[fieldName] = doc.type;
+        } else if (field.type === 'name'){
+            doc.data[fieldName] = doc.name;
+        } else {
+            if (attendee.data[fieldName] === 'Other' && _.has(attendee.data, 'user' + fieldName)){
+                doc.data[fieldName] = attendee.data['user' + fieldName];
+            } else {
+                doc.data[fieldName] = attendee.data[fieldName];
+            }
+        }
+    }
+    console.log(JSON.stringify(doc, null, 2));
+
+    req.models.attendee.getByEmail(doc.event_id, doc.email, function(err, existing){
+        if (err) { return next(err); }
+        if (existing){
+            req.flash('info', 'Attendee already exists');
+            return res.redirect('/attendees/' + existing.id);
+        }
+        req.models.attendee.create(doc, function(err, id){
+            if (err){
+                req.flash('danger', 'Error creating attendee: '+ err)
+                req.session.attendeeData = attendee;
+                return res.redirect('/attendee/new');
+            }
+            req.flash('success', 'Attendee Created');
+            if (req.query.backto){
+                res.redirect(req.query.backto);
+            } else {
+                res.redirect('/attendees/'+id);
+            }
+        });
+    });
+}
+
 router.use(auth.basicAuth);
 router.use(permission('access'));
 router.use(badgerHelper.setSection('attendees'));
@@ -235,14 +337,18 @@ router.get('/search', search);
 router.get('/', list);
 router.get('/listRegistered', listRegistered);
 
+router.get('/new', csurf(), showNew);
+router.post('/', csurf(), create);
+
 router.get('/:id', get);
 router.get('/:id/showBadge', showBadge);
+
 
 router.post('/:id/badge', printBadge);
 router.post('/:id/checkin', checkIn);
 router.post('/:id/register', register);
 router.post('/:id/unregister', unregister);
 
-router.post('/', updateAttendee);
+router.post('/update', updateAttendee);
 
 module.exports = router;

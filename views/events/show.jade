@@ -1,0 +1,47 @@
+extends ../layout
+
+block content
+    ol(class="breadcrumb")
+        li
+            a(href='/events') Events
+        li(class="active")= event.name
+    h2=event.name
+    if (event.importer_id)
+        p
+            strong Importer:
+            =" "
+            a(href='/importers/#{event.importer_id}')= event.importer.name
+    p=event.description
+    if (event.badge)
+        h3 Badge Layout
+        div(class="row")
+            div(class="col-sm-12")
+                table(class='table table-condensed table-striped')
+                    thead
+                        tr
+                            th Badge Field
+                            th Data Field
+                            th X Position
+                            th Y Position
+                            th Size
+                            th Alignment
+                            th Extras
+                    tbody
+
+                        for item in event.badge
+                            tr
+                                th= item.name
+                                td= _.has(item, 'dataField')? item.dataField: item.name
+                                td= item.x
+                                td= item.y
+                                td= item.size || 'default'
+                                td= item.align || 'default'
+                                td
+                                    -values = []
+                                    for value, property in item
+                                        -if (property === 'name' || property === 'dataField' || property === 'x' || property === 'y' || property === 'align' || property === 'size')
+                                            - continue;
+                                        - values.push("<strong>"+property + "</strong>: " + value)
+                                    | !{values}
+
+    a(class="btn btn-default" href='/events/#{event.id}/edit') Edit

@@ -36,7 +36,7 @@ $().ready(function () {
         },
         source: attendees.ttAdapter()
     }).on('typeahead:select', function(e, item){
-        window.location.href='/attendees/' + item.id;
+        window.location.href='/attendees/' + item.id + '?from=search';
     });
 
     setTimeout("$('.attendee-search').focus();", 0)

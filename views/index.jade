@@ -4,10 +4,14 @@ block content
   h2 #{session.currentEvent.name} Check in
   p
     div(class='row')
-        div(class='col-sm-12')
+        div(class='col-sm-11')
             input(type="search" class="attendee-search form-control", autocomplete="off", placeholder="Name or Email")
+        div(class='col-sm-1')
+            a(class='btn btn-success' href='/attendees/new?from=search')
+                i(class="glyphicon glyphicon-plus")
+                |  New Attendee
     div(class='row')
-        div(class='col-sm-12')
+        div(class='col-sm-11')
             object#attendee-result(type="application/pdf")
 
 

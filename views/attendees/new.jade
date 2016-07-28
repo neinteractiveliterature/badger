@@ -1,0 +1,83 @@
+extends ../layout
+
+block content
+    ol(class="breadcrumb")
+        li
+            a(href=from==='search'?'/':'/attendees')= from==='search'?'Search':'Attendees'
+        li(class="active")= from==='search'? 'Create Attendee':'Create'
+    div(class="row")
+        div(class="col-sm-8 col-sm-offset-2")
+            +panel-default('Create Attendee')
+                form(class="form" data-toggle="validator" method="POST" action="/attendees")
+                    input(type="hidden", name='_csrf',value=csrfToken)
+                    .form-group(class='has-feedback')
+                        label(for="name" class="control-label") Name
+                        input.form-control(type="text",placeholder="Name",name="attendee[name]",value=attendee.name,id='attendee_name',required)
+                        span(class="glyphicon form-control-feedback" aria-hidden="true")
+                        div(class="help-block with-errors")
+
+                    .form-group(class='has-feedback')
+                        label(for="email" class="control-label") Email
+                        input.form-control(type="email",placeholder="Email Address",name="attendee[email]",value=attendee.email,id='attendee_email')
+                        span(class="glyphicon form-control-feedback" aria-hidden="true")
+                        div(class="help-block with-errors")
+
+
+                    .form-group
+                        label(for="type" class="control-label") Type
+                        select(class="form-control", name="attendee[type]" id="attendee_type")
+                            for type in types
+                                option(value=type selected=attendee.type === type)= type
+                            option(value='Other' selected=attendee.type=== 'Other') Other
+                        input.form-control(type="text",class="additional-option",placeholder="Type",name="attendee[usertype]",value=attendee.usertype,id='attendee_user_type')
+
+
+                    each field, name in session.currentEvent.importer.rules.attendee
+                        -if (field.type === 'type' || field.type==='email' || field.type==='name')
+                            -continue
+                        -if (field.type === 'pronouns')
+                            .form-group
+                                label(for="data-#{name}" class="control-label property-name")= name
+                                select(class="form-control", name="attendee[data][pronouns]" id='attendee_data_pronouns')
+                                    for pronoun in pronouns
+                                        option(value=pronoun.values selected=attendee.pronouns === pronoun.values)= pronoun.values
+                                    option(value='' selected=attendee.pronouns==='') None
+                                    option(value='Other' selected=attendee.pronouns=== 'Other') Other
+                                input.form-control(type="text", class="additional-option",placeholder="Pronouns",name="attendee[data][userpronouns]",value=attendee.data.userpronouns,id='attendee_data_user_pronouns')
+                        -else
+                            .form-group(class='has-feedback')
+                                label(for="data-#{name}" class="control-label property-name")= name
+                                input.form-control(type="text",placeholder="#{name}",name="attendee[data][#{name}]",value=attendee.data[name],id='attendee_data_#{name}')
+                                span(class="glyphicon form-control-feedback" aria-hidden="true")
+                                div(class="help-block with-errors")
+
+
+
+                    .form-group
+                        button.btn.btn-primary(type="submit",name="create") Create
+                        a.btn.btn-link(href=from==='search'?'/':'/attendees') Cancel
+
+append scripts
+    script.
+        checkPronouns();
+        $('#attendee_data_pronouns').change(checkPronouns);
+        checkType();
+        $('#attendee_type').change(checkType);
+
+        function checkPronouns(){
+            var value = $('#attendee_data_pronouns').val();
+            if (value === 'Other' ){
+                $('#attendee_data_user_pronouns').show();
+            } else {
+                $('#attendee_data_user_pronouns').hide();
+            }
+        }
+        function checkType(){
+            var value = $('#attendee_type').val();
+            console.log(value);
+            if (value === 'Other'){
+                $('#attendee_user_type').show();
+            } else {
+                $('#attendee_user_type').hide();
+            }
+        }

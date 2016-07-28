@@ -15,10 +15,15 @@ function list(req, res, next){
 };
 
 function show(req, res, next){
-    req.models.user.get(req.params.id, function(err, user){
+    var user_id = req.params.id
+    req.models.user.get(user_id, function(err, user){
         if (err) {return next(err); }
         res.locals.user = user;
-        res.render('users/show');
+        req.getAuditsByUser(user_id, function(err, audits){
+            if (err) { return next(err); }
+            res.locals.audits = audits;
+            res.render('users/show');
+        });
     });
 };
 

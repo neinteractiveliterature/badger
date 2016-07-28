@@ -1,7 +1,11 @@
 body {
   margin-top: 50px;
   padding:30px;
-  font-size: 12px
+  /*font-size: 12px*/
+}
+
+table.table{
+  font-size: 12px;
 }
 
 a {
@@ -108,4 +112,11 @@ a {
   -webkit-border-radius: 16px;
      -moz-border-radius: 16px;
           border-radius: 16px;
+}
+
+.note{
+  font-size: 14px;
+}
+.additional-option{
+  margin-top: 5px;
 }

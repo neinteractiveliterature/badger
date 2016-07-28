@@ -23,6 +23,8 @@ function list(req, res, next){
                         list[attendee.data.pronouns] = 'Custom: ' + attendee.data.pronouns;
                     }
                 }
+                list['Other'] = 'Other';
+                list[''] = 'None';
                 res.json(list);
 
             })

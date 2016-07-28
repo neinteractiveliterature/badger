@@ -1,6 +1,12 @@
 extends ../layout
 
 block content
+    ol(class="breadcrumb")
+        li
+            a(href=from==='search'?'/':'/attendees')= from==='search'?'Search':'Attendees'
+        li(class="active")= attendee.name
+
+
     h2=attendee.name
     div(class="alert alert-info",id="alert-messages")
 
@@ -29,10 +35,13 @@ block content
                             td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
 
     for note in attendee.notes
-        .alert.alert-dismissible(role="alert",class="alert-info")
-            button.close(type="button",data-dismiss="alert" aria-label="Close")
-                span(aria-hidden="true")  &times;
-            =note.contents
+        -if (! note.cleared)
+            .alert.alert-dismissible(role="alert",class="alert-info fade in note", id='note-#{note.id}')
+                button.close(type="button",data-dismiss="alert" aria-label="Close")
+                    span(aria-hidden="true")  &times;
+                p= note.contents
+                p
+                    button(class="btn btn-primary btn-sm note-clear" note-id='#{note.id}') Clear
 
     div(class='row')
         div(class='col-sm-12')
@@ -61,22 +70,34 @@ block content
                             th Timestamp
                             th User
                             th Action
-                            th Field
-                            th Old Data
-                            th New Data
+                            th Details
+
                     tbody
                         for audit in audits
                             tr
                                 td= audit.id
                                 td= moment(audit.created).format('MMMM DD YYYY, HH:mm:ss')
-                                td= audit.user
+                                td
+                                    - if (checkPermission('admin'))
+                                        a(href='/users/#{audit.user_id}')= audit.user
+                                    - else
+                                        = audit.user
                                 td= audit.action
-                                td= _.has(audit.data, 'field')?audit.data.field:'N/A'
-                                td= _.has(audit.data, 'old')?audit.data.old:''
-                                td= _.has(audit.data, 'new')?audit.data.new:''
+                                td
+                                    - if (_.has(audit.data, 'field'))
+                                        - if (audit.data.old && audit.data.new)
+                                            | Changed #{audit.data.field} from #{audit.data.old} to #{audit.data.new}
+                                        - else if (audit.data.old)
+                                            | Cleared #{audit.data.field} ( was #{audit.data.old} )
+                                        - else
+                                            | Set #{audit.data.field} to #{audit.data.new}
+                                    - else if (_.has(audit.data, 'note'))
+                                        | Note #{audit.data.note}
+                    tfoot
+                        +pager
 
 append scripts
-    script(src="/javascripts/alerts.js")
+    script(src='/javascripts/data-table.js')
     script.
 
         allowKeypress = true;
@@ -87,13 +108,13 @@ append scripts
         });
 
 
-        $('.editable-text').editable('/attendees/', {
+        $('.editable-text').editable('/attendees/update', {
             placeholder: 'Click to set a new value',
             callback: function(){
                 allowKeypress = true;
             }
         });
-        $('.editable-boolean').editable('/attendees/', {
+        $('.editable-boolean').editable('/attendees/update', {
             data   : " {'Yes':'Yes', 'No':'No' }",
             type   : 'select',
             onblur : 'submit',
@@ -107,7 +128,7 @@ append scripts
             if (value === 'Other'){
                 value = prompt('Please enter value')
             }
-            $.post('/attendees/', {id: id, value:value}, function(data){
+            $.post('/attendees/update', {id: id, value:value}, function(data){
                 $(id).text(data);
             });
             return (value);
@@ -128,6 +149,7 @@ append scripts
         $('.btn-register').click(register);
         $('.btn-unregister').click(unregister);
         $('.btn-badge').click(badge);
+        $('.note-clear').click(clearNote);
 
         function showActions(){
             var registered = $('.registered').text();
@@ -257,6 +279,19 @@ append scripts
                         $('#attendee-'+id+'-registered').text('No');
                         showActions();
                         showAlert('success','Unregistered');
+                    }
+                }
+            });
+        }
+
+        function clearNote(){
+            var id = $(this).attr('note-id');
+            $.ajax({
+                method: 'PUT',
+                url: '/api/notes/'+id + '/clear',
+                success: function(data){
+                    if (data.success){
+                        $('#note-'+id).alert('close');
                     }
                 }
             });

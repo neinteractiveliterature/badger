@@ -1,0 +1,25 @@
+.form-group(class='has-feedback')
+    label(for="event_name" class="control-label") Name
+    input.form-control(type="text",placeholder="Name",name="event[name]",value=event.name,id='event_name',required)
+    span(class="glyphicon form-control-feedback" aria-hidden="true")
+    div(class="help-block with-errors")
+
+.form-group
+    label(for="attendee_importer_id" class="control-label") Importer
+    select(class="form-control", name="event[importer_id]" id="attendee_importer_id")
+        for importer in importers
+            option(value=importer.id selected=event.importer_id === importer.id)= importer.name
+
+.form-group
+    label(for="event_description") Description
+    textarea(class="form-control", name="event[description]" id="event_description")
+        = event.description
+
+.form-group
+    label(for="event_badge") Badge Layout
+    textarea(class="form-control", name="event[badge]" id="event_badge")
+        = JSON.stringify(event.badge, null, 2)
+
+.form-group
+    button.btn.btn-primary(type="submit")= event.id?'Update':'Create'
+    a.btn.btn-link(href="/events") Cancel

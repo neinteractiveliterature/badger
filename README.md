@@ -44,5 +44,11 @@ It supports
 
 ## TODO
 * All of the above marked in progress
-* breadcrumbs
+    * user management
+    * checkin notes
+        * create
+        * edit
+    * event management
+    * Import via website
+    * Image support for badges
 * support imported ids?

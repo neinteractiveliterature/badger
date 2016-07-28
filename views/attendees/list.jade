@@ -2,6 +2,9 @@ extends ../layout
 
 block content
     h2 Attendees List for #{session.currentEvent.name}
+    a(class='btn btn-success' href='/attendees/new')
+        span(class="glyphicon glyphicon-plus")
+        |  New Attendee
     table(class='table table-condensed table-striped table-sorted table-hover')
         thead
             tr
