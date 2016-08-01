@@ -15,7 +15,7 @@ function show(req, res, next){
             if (req.originalUrl.match(/\/api\//)){
                 res.status(404).json({});
             } else {
-                req.flash('danger', 'Note not found');
+                req.flash('error', 'Note not found');
                 res.redirect('/notes');
             }
         }

@@ -43,5 +43,5 @@ block content
                                             - continue;
                                         - values.push("<strong>"+property + "</strong>: " + value)
                                     | !{values}
-
-    a(class="btn btn-default" href='/events/#{event.id}/edit') Edit
+    if(checkPermission({event:event.id, type:'admin'}))
+        a(class="btn btn-default" href='/events/#{event.id}/edit') Edit

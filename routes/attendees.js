@@ -67,7 +67,7 @@ function get(req, res, next){
                     res.render('attendees/show');
                 });
             } else {
-                res.flash('danger', 'Attendee not found');
+                res.flash('error', 'Attendee not found');
                 res.redirect('/');
             }
         }
@@ -315,7 +315,7 @@ function create(req, res, next){
         }
         req.models.attendee.create(doc, function(err, id){
             if (err){
-                req.flash('danger', 'Error creating attendee: '+ err)
+                req.flash('error', 'Error creating attendee: '+ err)
                 req.session.attendeeData = attendee;
                 return res.redirect('/attendee/new');
             }

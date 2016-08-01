@@ -117,6 +117,31 @@ a {
 .note{
   font-size: 14px;
 }
+
 .additional-option{
   margin-top: 5px;
 }
+
+#badgeform .placeholder {
+    border: 1px solid green;
+    background-color: white;
+    -webkit-box-shadow: 0px 0px 10px #888;
+    -moz-box-shadow: 0px 0px 10px #888;
+    box-shadow: 0px 0px 10px #888;
+}
+
+#badgeform .form-group{
+  margin-bottom: 5px;
+  font-size: 12px;
+
+}
+
+#badgeform .ui-sortable-handle{
+  border-left-style: double;
+  border-left-width: 6px;
+}
+
+#emptyField {
+  display: none;
+}
+

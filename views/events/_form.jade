@@ -17,9 +17,72 @@
 
 .form-group
     label(for="event_badge") Badge Layout
-    textarea(class="form-control", name="event[badge]" id="event_badge")
-        = JSON.stringify(event.badge, null, 2)
+    ol.list-unstyled(id='badgeform')
+        if event.badge
+            each field, i in event.badge
+                li(class="form-horizontal panel panel-default")
+                    div.panel-body
+                        .form-group
+                            label(class="control-label col-sm-2") Field Name
+                            div(class='col-sm-8')
+                                input.form-control.input-sm(type="text",placeholder="Name",name="event[badge][#{i}][name]",value=event.badge[i].name, id='badge-#{i}-name')
+                            div.col-sm-2.text-right
+                                button(class="btn btn-danger btn-sm remove-field")
+                                    span.glyphicon.glyphicon-trash
+                                    |  Remove
+
+                        .form-group
+                            label(class="control-label col-sm-2") Data Field
+                            div(class='col-sm-10')
+                                .input-group
+                                    span.input-group-addon
+                                        input(type="checkbox" checked=!event.badge[i].dataField class='use-data-field' data-row=i)
+                                        |  Use Field Name
+                                    input.form-control.input-sm(type="text",placeholder="Data Field",name="event[badge][#{i}][dataField]",value=event.badge[i].dataField,id="badge-#{i}-datafield")
+                                    span.input-group-addon
+                                        input(type="checkbox" checked=event.badge[i].exclusive name="event[badge][#{i}][exclusive]")
+                                        |  Exclusive
+
+                        .form-group
+                            label(class="control-label col-sm-2") X (Horizontal):
+                            div(class='col-sm-2')
+                                input.form-control.input-sm(type="text",placeholder="Position",name="event[badge][#{i}][x]",value=event.badge[i].x,title="pixels, 'center', or 'margin'")
+                            label(class="control-label col-sm-2") Y (Vertical):
+                            div(class='col-sm-2')
+                                input.form-control.input-sm(type="text",placeholder="Position",name="event[badge][#{i}][y]",value=event.badge[i].y,title="pixels, 'center', 'margin', or '-margin")
+                            label(class="control-label col-sm-2") Width:
+                            div(class='col-sm-2')
+                                input.form-control.input-sm(type="text",placeholder="Width",name="event[badge][#{i}][width]",value=event.badge[i].width||'auto')
+
+                        .form-group
+                            label(class="control-label col-sm-2") Font Size
+                            div(class='col-sm-4')
+                                input.form-control.input-sm(type="text",placeholder="Size",name="event[badge][#{i}][size]",value=event.badge[i].size)
+                            label(class="control-label col-sm-2") Alignment
+                            div(class='col-sm-4')
+                                select.form-control.input-sm(name="event[badge][#{i}][align]")
+                                    option(value='left' selected=event.badge[i].align ==='left') Left
+                                    option(value='center' selected=event.badge[i].align ==='center') Center
+                                    option(value='right' selected=event.badge[i].align ==='right') Right
+                        .form-group
+                            label(class="control-label col-sm-2") Font
+                            div(class='col-sm-10')
+                                input.form-control.input-sm(type="text",placeholder="Path to Font",name="event[badge][#{i}][font]",value=event.badge[i].font)
+
+                        .form-group
+                            label(class="control-label col-sm-2") PDF Options
+                                = " "
+                                a(href="http://pdfkit.org/docs/text.html#text_styling", target="_blank")
+                                    span.glyphicon.glyphicon-question-sign
+                            div(class='col-sm-10')
+                                input.form-control.input-sm(type="json",placeholder="{ pdfKitOption: value }", name="event[badge][#{i}][pdfOptions]", value=event.badge[i].pdfOptions)
+    button(class="btn btn-success",id='add-field')
+        span(class='glyphicon glyphicon-plus')
+        |  Add Field
 
 .form-group
     button.btn.btn-primary(type="submit")= event.id?'Update':'Create'
     a.btn.btn-link(href="/events") Cancel
+
+
+

@@ -5,14 +5,20 @@ block content
         li
             a(href='/events') Events
         li
-            a(href-'/events/#{event.id}')= event.name
+            a(href='/events/#{event.id}')= event.name
         li(class="active") Edit
 
     div(class="row")
         div(class="col-sm-8 col-sm-offset-2")
-            +panel-default('Edit Event: #{event.name}')
+            +panel-default('Edit Event: '+ event.name)
                 form(class="form" data-toggle="validator" method="POST" action="/events/#{event.id}")
                     input(type="hidden", name="_method",  value="PUT")
                     input(type="hidden", name='_csrf',value=csrfToken)
+                    input(type="hidden", name='event[id]',value=event.id)
                     include ./_form.jade
+                include ./_badgeField.jade
+
+
+append scripts
+    script(src='/javascripts/eventEdit.js')
 
