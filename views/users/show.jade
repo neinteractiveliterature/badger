@@ -26,6 +26,9 @@ block content
                             ul
                                 for event in user.events
                                     li #{event.name}: #{event.admin?'Admin':'User'}
+    if(checkPermission('admin'))
+        a(class="btn btn-default" href='/users/#{user.id}/edit') Edit
+
 
 
     -if (audits.length && checkPermission('admin'))

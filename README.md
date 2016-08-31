@@ -19,17 +19,17 @@ It supports
     * Automatic shrink text to fit
     * Font support
     * Style support
-    * Image support (in progress)
+
 * Import attendee data from CSV
     * via CLI tool
     * via Website (in progress)
 * Per-attendee check-in notes
-* Add attendees at the door (in progress)
+* Add attendees at the door
 * Simple search interface for checking in attendees
 * Search/filter/sortable lists for attendees, users, events
-* Audit trail of all activity (in progress)
+* Audit trail of all activity
 * Audit event viewer/exporter (in progress)
-* User mananement via GUI (in progress)
+* User mananement via GUI
 
 ## Instalation
 
@@ -44,11 +44,13 @@ It supports
 
 ## TODO
 * All of the above marked in progress
-    * user management
     * checkin notes
         * create
         * edit
     * event management
     * Import via website
     * Image support for badges
+    * delete users
+    * delete attendees
+    * delete events
 * support imported ids?

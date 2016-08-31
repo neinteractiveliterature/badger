@@ -191,7 +191,7 @@ append scripts
                 metaHeld = true;
             }
             if (allowKeypress && !metaHeld){
-                console.log(keycode);
+                //console.log(keycode);
 
                 if(keycode === 67){ // c
                     $('#check-in-and-badge-form').submit();
@@ -236,7 +236,6 @@ append scripts
 
         function badge(){
             var id = $('.btn-badge').attr('data-id');
-            console.log('badging');
             $.ajax({
                 method: 'POST',
                 url: '/api/attendees/' + id + '/badge',

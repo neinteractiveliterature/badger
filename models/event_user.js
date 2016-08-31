@@ -46,11 +46,11 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into events_users (user_id, event_id, admin) values ($1, $2, $3) returning id';
+    var query = 'insert into events_users (user_id, event_id, admin) values ($1, $2, $3)';
     var dataArr = [data.user_id, data.event_id, data.admin];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
-        return cb(null, result.rows[0].id);
+        return cb(null, result);
     });
 };
 

@@ -153,7 +153,6 @@ function update(req, res, next){
         }
         doc.badge = badge;
 
-        console.log(JSON.stringify(doc, null, 2));
         return res.redirect('/events/' + id + '/edit');
 
         req.models.event.update(id, doc, function(err){

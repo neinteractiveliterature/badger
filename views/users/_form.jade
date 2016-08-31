@@ -1,0 +1,52 @@
+.form-group(class='has-feedback')
+    label(for="user_name" class="control-label") Name
+    input.form-control(type="text",placeholder="Name",name="user[name]",value=user.name,id='user_name',required)
+    span(class="glyphicon form-control-feedback" aria-hidden="true")
+    div(class="help-block with-errors")
+
+.form-group(class='has-feedback')
+    label(for="user_username" class="control-label") Username
+    input.form-control(type="text",placeholder="Username",name="user[username]",value=user.username,id='user_username',required)
+    span(class="glyphicon form-control-feedback" aria-hidden="true")
+    div(class="help-block with-errors")
+
+.form-group
+    label(for="user_password" class="control-label")= user.id ? 'Password (Enter to change)' :'Password'
+    .row
+        .form-group.col-sm-6.has-feedback
+            input.form-control(type="password",name="user[password]", id='user_password',placeholder='Password',data-minlength="6",required=!user.id)
+            div(class="help-block with-errors")
+        .form-group.col-sm-6.has-feedback
+            input.form-control(type="password",name="user[password_confirm]", id='user_password_confirm',data-match="#user_password",placeholder='Confirm',required=!user.id)
+            div(class="help-block with-errors")
+
+.form-group
+    label( class="control-label") Permissions
+    .form-group
+        .checkbox
+            label
+                input(type="checkbox" checked=user.admin name="user[admin]")
+                |  Global Administrator
+    .form-group
+        table(class='table table-striped')
+            thead
+                trow
+                    th Event Name
+                    th Access
+                    th Administrator
+            tbody
+                for event in visibleEvents
+                    tr
+                        td= event.name
+                        td
+                            input(type="checkbox" name="user[events][event-#{event.id}][access]" checked=user.events[event.id])
+                        td
+                            input(type="checkbox" name="user[events][event-#{event.id}][admin]" checked=user.events[event.id] && user.events[event.id].admin)
+
+.form-group
+    button.btn.btn-primary(type="submit")= user.id?'Update':'Create'
+    a.btn.btn-link(href="/events") Cancel
+
+
+if user
+    pre=JSON.stringify(user, null, 2)

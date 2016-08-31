@@ -162,7 +162,6 @@ function checkIn(req, res, next){
             req.audit('checkin', 'attendee', attendee_id, cb);
         },
         function(log_id, cb){
-            console.log(req.query.badge);
             if (req.query.badge){
                 async.series([
                     function(cb){
@@ -305,7 +304,6 @@ function create(req, res, next){
             }
         }
     }
-    console.log(JSON.stringify(doc, null, 2));
 
     req.models.attendee.getByEmail(doc.event_id, doc.email, function(err, existing){
         if (err) { return next(err); }

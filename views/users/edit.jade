@@ -1,0 +1,18 @@
+extends ../layout
+
+block content
+    ol(class="breadcrumb")
+        li
+            a(href='/users') Users
+        li
+            a(href='/users/#{user.id}')= user.name
+        li(class="active") Edit
+
+    div(class="row")
+        div(class="col-sm-8 col-sm-offset-2")
+            +panel-default('Edit User: '+ user.name)
+                form(class="form" role="form" data-toggle="validator" method="POST" action="/users/#{user.id}")
+                    input(type="hidden", name="_method",  value="PUT")
+                    input(type="hidden", name='_csrf',value=csrfToken)
+                    input(type="hidden", name='user[id]',value=user.id)
+                    include ./_form.jade
