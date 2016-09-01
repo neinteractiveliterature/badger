@@ -1,3 +1,30 @@
+create table importers
+(
+    id serial,
+    name character varying (80) not null,
+    rules jsonb,
+    primary key (id),
+    CONSTRAINT importer_name_ukey UNIQUE (name)
+);
+
+insert into importers (name, rules) values ('intercon', '{"attendee":{"name":{"field":["FirstName"," ","LastName"],"type":"name"},"badgename":{"field":"Nickname","display":true},"type":{"field":"Status","map":{"Alumni":"Unpaid"},"display":true,"type":"type"},"email":{"field":"EMail","type":"email"},"pronouns":{"field":"PreferredCharacterGender","map":{"Male":"He/Him/His","Female":"She/Her/Hers"},"type":"pronouns","display":true}},"notes":[{"field":"IsGM","map":{"0":"","1":"Is a GM, gets a patch"}},{"field":"ShirtOrder"}]}');
+
+
+CREATE TABLE events
+(
+    id serial,
+    name character varying(255),
+    description text,
+    badge jsonb,
+    importer_id int,
+    created timestamp with time zone NOT NULL DEFAULT now(),
+    primary key (id),
+    CONSTRAINT event_name_ukey UNIQUE (name),
+    CONSTRAINT "event_importer_fkey" FOREIGN KEY ("importer_id")
+        REFERENCES importers ("id") MATCH SIMPLE
+        ON UPDATE NO ACTION ON DELETE SET NULL
+);
+
 CREATE TABLE users
 (
     id serial,
@@ -18,33 +45,6 @@ CREATE TABLE users
 insert into users (name, username, password, admin)
     values ('Administrator', 'admin', 'c2NyeXB0AA4AAAAIAAAAAXtV7XSrMTXwRi68kGZ+NWDQtHvijDB79Mfc2fI6FPAGDvqGuqDaHri4DlGK3IXj+llh66JyroPRbBrra9lNU8KW5LgsVK+1IVgWgNBIGifX', true);
 
-
-create table importers
-(
-    id serial,
-    name character varying (80) not null,
-    rules jsonb,
-    primary key (id),
-    CONSTRAINT importer_name_ukey UNIQUE (name)
-);
-
-insert into importers (name, rules) values ('intercon', '{"attendee":{"name":["FirstName"," ","LastName"],"badgename":"Nickname","type":{"field":"Status","map":{"Alumni":"Unpaid"}},"email":"EMail","pronouns":"Pronouns"},"notes":[{"field":"IsGM","map":{"0":"","1":"Is a GM, gets a patch"}},{"field":"ShirtOrder"}]}');
-
-
-CREATE TABLE events
-(
-    id serial,
-    name character varying(255),
-    description text,
-    badge jsonb,
-    importer_id int,
-    created timestamp with time zone NOT NULL DEFAULT now(),
-    primary key (id),
-    CONSTRAINT event_name_ukey UNIQUE (name),
-    CONSTRAINT "event_importer_fkey" FOREIGN KEY ("importer_id")
-        REFERENCES importers ("id") MATCH SIMPLE
-        ON UPDATE NO ACTION ON DELETE SET NULL
-);
 
 CREATE TABLE events_users
 (
@@ -122,15 +122,3 @@ insert into pronouns (values, freeform) values ('He/Him/His', false);
 insert into pronouns (values, freeform) values ('They/Them/Theirs', false);
 insert into pronouns (values, freeform) values ('No pronouns, use my name', false);
 insert into pronouns (values, freeform) values ('Other', true);
-
-
-create table importers
-(
-    id serial,
-    name character varying (80) not null,
-    rules jsonb,
-    primary key (id),
-    CONSTRAINT importer_name_ukey UNIQUE (name)
-);
-
-insert into importers (name, rules) values ('intercon', '{"attendee":{"name":["FirstName"," ","LastName"],"badgename":"Nickname","type":{"field":"Status","map":{"Alumni":"Unpaid"}},"email":"EMail","pronouns":"Pronouns"},"notes":[{"field":"IsGM","map":{"0":"","1":"Is a GM, gets a patch"}},{"field":"ShirtOrder"}]}');
