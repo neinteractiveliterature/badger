@@ -25,6 +25,7 @@ var events = require('./routes/events');
 var attendees = require('./routes/attendees');
 var pronouns = require('./routes/pronouns');
 var notes = require('./routes/notes');
+var preferences = require('./routes/preferences');
 
 
 var app = express();
@@ -122,6 +123,7 @@ app.use('/', routes);
 app.use('/login', login);
 app.use('/logout', logout);
 app.use('/users', users);
+app.use('/preferences', preferences);
 app.use('/events', events);
 app.use('/api/events', events);
 app.use('/attendees', attendees);

@@ -54,6 +54,7 @@ function showEdit(req, res, next){
         res.render('users/edit');
     } else {
         req.models.user.get(user_id, function(err, user){
+            if (err) { return next(err); }
             res.locals.user = user;
             res.render('users/edit');
         });

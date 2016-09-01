@@ -16,9 +16,10 @@ $(function () {
     $('.use-data-field').change(updateDataFields);
 
 
-    $('.field-remove').click(function(e){
+    $('.remove-field').click(function(e){
         e.preventDefault();
         var $parent = $(this).closest('li');
+        console.log('here');
         BootstrapDialog.confirm({
             title: 'Remove Field',
             message: "Are you sure you want to remove this field?",

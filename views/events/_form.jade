@@ -17,6 +17,7 @@
 
 .form-group
     label(for="event_badge") Badge Layout
+    |  (Drag to reorder fields)
     ol.list-unstyled(id='badgeform')
         if event.badge
             each field, i in event.badge

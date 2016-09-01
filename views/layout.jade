@@ -100,7 +100,7 @@ html(lang="en")
                     ul.nav.navbar-nav(class='navbar-right')
 
                         - if (checkPermission('login'))
-                            p(class='navbar-text')= session.user.name
+                            +nav_item("/preferences",siteSection==='preferences'?'active':null)=session.user.name
                             +nav_item("/logout") Logout
                         - else
                             + nav_item('/login') Login

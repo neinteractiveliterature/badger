@@ -47,7 +47,6 @@ It supports
     * checkin notes
         * create
         * edit
-    * event management
     * Import via website
     * Image support for badges
     * delete users

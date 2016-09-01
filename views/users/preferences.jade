@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+    div(class="row")
+        div(class="col-sm-8 col-sm-offset-2")
+            +panel-default('Edit Preferences')
+                form(class="form" role="form" data-toggle="validator" method="POST" action="/preferences")
+                    input(type="hidden", name="_method",  value="PUT")
+                    input(type="hidden", name='_csrf',value=csrfToken)
+                    .form-group(class='has-feedback')
+                        label(for="user_name" class="control-label") Name
+                        input.form-control(type="text",placeholder="Name",name="user[name]",value=user.name,id='user_name',required)
+                        span(class="glyphicon form-control-feedback" aria-hidden="true")
+                        div(class="help-block with-errors")
+
+                    .form-group
+                        label(for="user_password" class="control-label") Password (Enter to change)
+                        .row
+                            .form-group.col-sm-6.has-feedback
+                                input.form-control(type="password",name="user[password]", id='user_password',placeholder='Password',data-minlength="6",required=!user.id)
+                                div(class="help-block with-errors")
+                            .form-group.col-sm-6.has-feedback
+                                input.form-control(type="password",name="user[password_confirm]", id='user_password_confirm',data-match="#user_password",placeholder='Confirm',required=!user.id)
+                                div(class="help-block with-errors")
+
+                    .form-group
+                        button.btn.btn-primary(type="submit") Save
+                        a.btn.btn-link(href="/") Cancel
