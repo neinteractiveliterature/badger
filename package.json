@@ -26,7 +26,6 @@
     "parse-database-url": "^0.3.0",
     "pdfkit": "^0.8.x",
     "pg": "^6.0.1",
-    "printer": "^0.2.1",
     "redis": "^2.6.2",
     "scrypt": "^6.0.3",
     "serve-favicon": "~2.3.0",
