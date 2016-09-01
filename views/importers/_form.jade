@@ -1,0 +1,20 @@
+.form-group(class='has-feedback')
+    label(for="importer_name" class="control-label") Name
+    input.form-control(type="text",placeholder="Name",name="importer[name]",value=importer.name,id='importer_name',required)
+    span(class="glyphicon form-control-feedback" aria-hidden="true")
+    div(class="help-block with-errors")
+
+.form-group(class='has-feedback')
+    label(for="importer_description") Rules
+    textarea(class="form-control", name="importer[rules]" id="importer_description" rows=30 data-remote="/importers/validate" required)
+        = JSON.stringify(importer.rules, null, 2)
+    span(class="glyphicon form-control-feedback" aria-hidden="true")
+
+    div(class="help-block with-errors")
+
+.form-group
+    button.btn.btn-primary(type="submit")= importer.id?'Update':'Create'
+    a.btn.btn-link(href="/importers") Cancel
+
+
+

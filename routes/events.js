@@ -119,15 +119,15 @@ function create(req, res, next){
 
         return res.redirect('/events/new');
 
-        req.models.event.create(doc, function(err, newEvent){
+        req.models.event.create(doc, function(err, newEventId){
             if (err){
                 req.flash('error', 'Error creating event: ' + err);
                 return res.redirect('/events/new');
             }
             delete req.session.eventData;
-            req.audit('create', 'event', newEvent.id);
+            req.audit('create', 'event', newEventId);
             req.flash('success', 'Created Event '+ doc.name);
-            res.redirect('/events/' + newEvent.id);
+            res.redirect('/events/' + newEventId);
         });
     });
 }

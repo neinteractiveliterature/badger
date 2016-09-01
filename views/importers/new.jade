@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+    ol(class="breadcrumb")
+        li
+            a(href='/importers') Importers
+        li(class="active") Create
+
+    div(class="row")
+        div(class="col-sm-8 col-sm-offset-2")
+            +panel-default('Create Importer')
+                form(class="form" data-toggle="validator" method="POST" action="/importers")
+                    input(type="hidden", name='_csrf',value=csrfToken)
+                    include ./_form.jade

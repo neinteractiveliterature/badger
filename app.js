@@ -26,6 +26,7 @@ var attendees = require('./routes/attendees');
 var pronouns = require('./routes/pronouns');
 var notes = require('./routes/notes');
 var preferences = require('./routes/preferences');
+var importers = require('./routes/importers');
 
 
 var app = express();
@@ -132,6 +133,8 @@ app.use('/pronouns', pronouns);
 app.use('/api/pronouns', pronouns);
 app.use('/notes', notes);
 app.use('/api/notes', notes);
+app.use('/importers', importers);
+app.use('/api/importers', importers);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
