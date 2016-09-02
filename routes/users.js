@@ -211,7 +211,6 @@ function updateEvents(req, userId, events, cb){
                     event_id: event,
                     admin: _.has(events[event], 'admin') && events[event].admin === 'on'
                 }
-                console.log(JSON.stringify(doc, null, 2));
                 req.models.event_user.create(doc, cb);
 
             }, cb);

@@ -62,7 +62,6 @@ function update(req, res, next){
     });
 
     function updateUser(doc ){
-        console.log(JSON.stringify(doc, null, 2));
          req.models.user.update(id, doc, function(err){
             if (err){
                 req.flash('error', err);

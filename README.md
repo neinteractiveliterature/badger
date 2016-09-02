@@ -45,12 +45,12 @@ It supports
 ## TODO
 * All of the above marked in progress
     * checkin notes
-        * create
         * edit
     * Import via website
     * Image support for badges
-    * delete users
+    * lock/suspend users
     * delete attendees
     * delete events
 
 * support imported ids?
+* documentation

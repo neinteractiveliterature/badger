@@ -59,12 +59,16 @@ function clear(req, res, next){
 
 function create(req, res, next){
     var note = req.body.note;
+    note.cleared = false;
     req.models.note.create(note, function(err, id){
         if (err) { return next(err); }
+        req.audit('create note', 'attendee', note.attendee_id, {note: id});
+        req.audit('create', 'note', id);
+
         if (req.originalUrl.match(/\/api\//)){
             res.json({success:true});
         } else {
-            res.redirect('/notes/' + id);
+            res.redirect('/attendees/' + note.attendee_id);
         }
     });
 }
@@ -77,7 +81,7 @@ function update(req, res, next){
         if (req.originalUrl.match(/\/api\//)){
             res.json({success:true});
         } else {
-            res.redirect('/notes');
+            res.redirect('/attendees/' + note.attendee_id);
         }
     });
 }
