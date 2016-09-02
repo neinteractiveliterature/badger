@@ -52,4 +52,5 @@ It supports
     * delete users
     * delete attendees
     * delete events
+
 * support imported ids?

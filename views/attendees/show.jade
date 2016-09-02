@@ -48,13 +48,17 @@ block content
 
             div(class='registered-actions btn-toolbar')
                 form(method="POST", action="/attendees/#{attendee.id}/checkin?badge=true", id='check-in-and-badge-form')
-                    button#checkin(class='btn btn-primary btn-checkin-badge' data-id="#{attendee.id}") <u>C</u>heck In and Badge
+                    button#checkinAndBadge(class='btn btn-primary btn-checkin-badge' data-id="#{attendee.id}") <u>C</u>heck In and Badge
 
-                button#badge(class='btn btn-default btn-checkin' data-id="#{attendee.id}") Check <u>I</u>n
+                button#checkIn(class='btn btn-default btn-checkin' data-id="#{attendee.id}") Check <u>I</u>n
 
                 button#badge(class='btn btn-default btn-badge' data-id="#{attendee.id}")= attendee.badged?'<u>B</u>adge Again':'Print <u>B</u>adge'
 
+                - checkPermission('eventadmin')
+                    button#uncheckIn(class='btn btn-default btn-uncheckin' data-id="#{attendee.id}") Uncheck In
+
                 button#register(class='btn btn-default btn-unregister' data-id="#{attendee.id}") <u>U</u>nregister
+
 
             div(class="unregistered-actions btn-toolbar")
                 button#register(class='btn btn-primary btn-register' data-id="#{attendee.id}") <u>R</u>egister
@@ -150,6 +154,7 @@ append scripts
         $('.btn-unregister').click(unregister);
         $('.btn-badge').click(badge);
         $('.note-clear').click(clearNote);
+        $('.btn-uncheckin').click(uncheckIn);
 
         function showActions(){
             var registered = $('.registered').text();
@@ -160,10 +165,12 @@ append scripts
                 $('.btn-checkin-badge').hide();
                 $('.btn-checkin').hide();
                 $('.btn-unregister').hide();
+                $('.btn-uncheckin').show();
             } else {
                 $('.btn-checkin-badge').show();
                 $('.btn-checkin').show();
                 $('.btn-unregister').show();
+                $('.btn-uncheckin').hide();
             }
 
             if (badged === 'Yes'){
@@ -229,6 +236,24 @@ append scripts
                         $('#attendee-'+id+'-checked-in').text('Yes');
                         showActions();
                         showAlert('success', 'Checked In');
+                    }
+                }
+            });
+        }
+
+        function uncheckIn(){
+            if ($('#attendee-'+id+'-checked-in').text() === 'No'){
+                return;
+            }
+            var id = $('.btn-checkin').attr('data-id');
+            $.ajax({
+                method:'POST',
+                url: '/api/attendees/' + id + '/uncheckin',
+                success: function(data){
+                    if (data.success){
+                        $('#attendee-'+id+'-checked-in').text('No');
+                        showActions();
+                        showAlert('success', 'Unchecked In');
                     }
                 }
             });

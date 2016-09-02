@@ -195,6 +195,22 @@ function checkIn(req, res, next){
     });
 }
 
+function uncheckin(req, res, next){
+    var attendee_id = req.params.id;
+    req.models.attendee.get(attendee_id, function(err, attendee){
+        if (err) { return next(err); }
+        if (attendee.checked_in === false){
+            return res.json({success:true});
+        }
+        attendee.checked_in = false;
+        req.models.attendee.update(attendee.id, attendee, function(err){
+            if (err){ return next(err); }
+            req.audit('uncheckin', 'attendee', attendee_id);
+            res.json({success:true});
+        });
+    });
+}
+
 function updateAttendee(req, res, next){
     var value = req.body.value;
     var parts = req.body.id.split('-');
@@ -344,6 +360,7 @@ router.get('/:id/showBadge', showBadge);
 
 router.post('/:id/badge', printBadge);
 router.post('/:id/checkin', checkIn);
+router.post('/:id/uncheckin', permission('eventadmin'), checkIn);
 router.post('/:id/register', register);
 router.post('/:id/unregister', unregister);
 
