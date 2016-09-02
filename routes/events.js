@@ -44,10 +44,24 @@ function show(req, res, next){
         if (req.originalUrl.match(/\/api\//)){
             res.json(event);
         } else {
-            req.models.importer.get(event.importer_id, function(err, importer){
+            async.parallel({
+                importer: function(cb){
+                    req.models.importer.get(event.importer_id, cb);
+                },
+                attendees: function(cb){
+                    req.models.attendee.listByEvent(event_id, cb);
+                }
+            }, function(err, result){
                 if (err) { return next(err); }
-                event.importer = importer;
+
+                event.importer = result.importer;
                 res.locals.event = event;
+                res.locals.attendees = {
+                    total: result.attendees.length,
+                    registered: _.filter(result.attendees, function(e) { return e.registered; }).length,
+                    badged: _.filter(result.attendees, function(e) { return e.badged; }).length,
+                    checkedIn: _.filter(result.attendees, function(e) { return e.checked_in; }).length
+                }
                 res.render('events/show');
             });
         }
@@ -222,6 +236,22 @@ function buildBadge(data, cb){
     }, cb);
 }
 
+function deleteEvent(req, res, next){
+    var event_id = req.params.id;
+    req.models.event.get(event_id, function(err, event){
+        if (err){ return next(err); }
+        req.models.event.delete(event_id, function(err){
+            if (err){ return next(err); }
+            if (req.originalUrl.match(/\/api\//)){
+                res.json({success:true});
+            } else {
+                req.flash('success', 'deleted Event '+ event.name);
+                res.redirect('/events/');
+            }
+        });
+    });
+}
+
 function adminPermission(req, res, next){
     permission({event: req.params.id, type:"admin"})(req, res, next);
 }
@@ -246,6 +276,6 @@ router.get('/:id/select', selectEvent);
 router.get('/:id/edit', adminPermission, csurf(), showEdit);
 router.put('/:id', adminPermission, csurf(), update);
 
-//router.delete('/:id', permission('admin'), csurf(), deleteEvent);
+//router.delete('/:id', permission('admin'), deleteEvent);
 
 module.exports = router;

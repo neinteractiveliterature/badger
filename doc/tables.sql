@@ -38,7 +38,7 @@ CREATE TABLE users
     CONSTRAINT user_username_uk UNIQUE(username),
     CONSTRAINT "user_event_fkey" FOREIGN KEY ("current_event_id")
         REFERENCES events ("id") MATCH SIMPLE
-        ON UPDATE NO ACTION ON DELETE CASCADE
+        ON UPDATE NO ACTION ON DELETE SET NULL
 );
 
 -- Admin user:  admin/admin

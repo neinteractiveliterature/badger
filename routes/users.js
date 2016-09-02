@@ -143,7 +143,6 @@ function update(req, res, next){
     }
 
     var doc = {
-        id: id,
         name: user.name,
         username: user.username,
         admin: user.admin === 'on'
@@ -168,23 +167,29 @@ function update(req, res, next){
     }
 
     function updateUser(){
-         req.models.user.update(id, doc, function(err){
+        async.waterfall([
+            function(cb){
+                req.models.user.get(id, cb);
+            },
+            function(record, cb){
+                for (var key in doc){
+                    record[key] = doc[key];
+                }
+                req.models.user.update(id, record, cb);
+            },
+            function(result, cb){
+                updateEvents(req, id, user.events, cb);
+            }
+        ], function(err){
             if (err){
                 req.flash('error', err);
                 return res.redirect('/users/'+id+'/edit');
             }
-            updateEvents(req, id, user.events, function(err){
-                if (err){
-                    console.log(err);
-                    req.flash('error', 'Error updating Event Permisions');
-                    return res.redirect('/users/'+id+'/edit');
-                }
 
-                req.audit('update', 'user', id);
-                req.flash('success', 'Updated user '+ doc.name);
-                delete req.session.userData;
-                res.redirect('/users/' + id);
-            });
+            req.audit('update', 'user', id);
+            req.flash('success', 'Updated user '+ doc.name);
+            delete req.session.userData;
+            res.redirect('/users/' + id);
         });
     }
 }
