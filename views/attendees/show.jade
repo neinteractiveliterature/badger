@@ -10,8 +10,8 @@ block content
     h2=attendee.name
     div(class="alert alert-info",id="alert-messages")
 
-    div(class='row')
-        div(class='col-sm-12')
+    .row
+        .col-sm-12
             table(class='table table-striped table-condensed')
                 thead
                     tr
@@ -34,34 +34,51 @@ block content
                         for field in session.currentEvent.displayFields
                             td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
 
-    for note in attendee.notes
-        -if (! note.cleared)
-            .alert.alert-dismissible(role="alert",class="alert-info fade in note", id='note-#{note.id}')
-                button.close(type="button",data-dismiss="alert" aria-label="Close")
-                    span(aria-hidden="true")  &times;
-                p= note.contents
-                p
-                    button(class="btn btn-primary btn-sm note-clear" note-id='#{note.id}') Clear
 
-    div(class='row')
-        div(class='col-sm-12')
+    div#notes
+        .row
+            .col-sm-12
+                for note in attendee.notes
+                    .alert.alert(role="alert",class="alert-info fade in note #{note.cleared?'note-cleared':''}", id='note-#{note.id}')
+                        p= note.contents
+                        -if (! note.cleared)
+                            p
+                                button(class="btn btn-primary btn-sm note-clear" note-id='#{note.id}') Clear
 
-            div(class='registered-actions btn-toolbar')
+    div.row
+        div.col-sm-12(id='attendee-action-bar')
+
+            span(class='registered-actions')
                 form(method="POST", action="/attendees/#{attendee.id}/checkin?badge=true", id='check-in-and-badge-form')
-                    button#checkinAndBadge(class='btn btn-primary btn-checkin-badge' data-id="#{attendee.id}") <u>C</u>heck In and Badge
+                    button#btn-checkin-badge(class='btn btn-primary btn-checkin-badge' data-id="#{attendee.id}" type="button") <u>C</u>heck In and Badge
 
-                button#checkIn(class='btn btn-default btn-checkin' data-id="#{attendee.id}") Check <u>I</u>n
+                button#btn-checkin(class='btn btn-default' data-id="#{attendee.id}" type="button") Check <u>I</u>n
 
-                button#badge(class='btn btn-default btn-badge' data-id="#{attendee.id}")= attendee.badged?'<u>B</u>adge Again':'Print <u>B</u>adge'
+                button#btn-badge(class='btn btn-default' data-id="#{attendee.id}" type="button")!= attendee.badged?'<u>B</u>adge Again':'Print <u>B</u>adge'
 
-                - checkPermission('eventadmin')
-                    button#uncheckIn(class='btn btn-default btn-uncheckin' data-id="#{attendee.id}") Uncheck In
+                -if(checkPermission('eventadmin'))
+                    button#btn-uncheckin(class='btn btn-default' data-id="#{attendee.id}" type="button") Uncheck In
 
-                button#register(class='btn btn-default btn-unregister' data-id="#{attendee.id}") <u>U</u>nregister
+                button#btn-unregister(class='btn btn-default' data-id="#{attendee.id}" type="button") <u>U</u>nregister
 
 
-            div(class="unregistered-actions btn-toolbar")
-                button#register(class='btn btn-primary btn-register' data-id="#{attendee.id}") <u>R</u>egister
+            span(class="unregistered-actions")
+                button#btn-register(class='btn btn-primary' data-id="#{attendee.id}" type="button") <u>R</u>egister
+
+            -if( checkPermission('eventadmin'))
+                button#btn-showNotes(class='btn btn-default' type="button" action="show") Show All Notes
+                span(class="note-actions")
+                    form.form-inline
+                        button#btn-addNote(class='btn btn-default' type="button" action="show") Add Note
+    -if(checkPermission('eventadmin'))
+        .row
+            .col-sm-12
+                form.form-inline#addNote(class="form" method="POST" action="/notes")
+                    input(type="hidden" name="note[attendee_id]" value=attendee.id)
+                    div.form-group
+                        label(for='#note_contents' ) New Note:
+                        input.form-control#note_contents(type='text' name='note[contents]')
+                    button(class='btn btn-primary btn-addNoteSave' data-id="#{attendee.id}" type="submit" action="show") Save
 
     -if (audits.length && checkPermission('eventadmin'))
         h3 History
@@ -102,222 +119,5 @@ block content
 
 append scripts
     script(src='/javascripts/data-table.js')
-    script.
-
-        allowKeypress = true;
-        showActions();
-
-        $('.editable').on('click', function(){
-            allowKeypress = false;
-        });
-
-
-        $('.editable-text').editable('/attendees/update', {
-            placeholder: 'Click to set a new value',
-            callback: function(){
-                allowKeypress = true;
-            }
-        });
-        $('.editable-boolean').editable('/attendees/update', {
-            data   : " {'Yes':'Yes', 'No':'No' }",
-            type   : 'select',
-            onblur : 'submit',
-            callback: function(){
-                allowKeyPress = true;
-                showActions();
-            }
-        });
-        $('.editable-pronouns').editable(function(value, settings){
-            var id = $(this).attr('id');
-            if (value === 'Other'){
-                value = prompt('Please enter value')
-            }
-            $.post('/attendees/update', {id: id, value:value}, function(data){
-                $(id).text(data);
-            });
-            return (value);
-
-        }, {
-            cssclass: 'edit-pronouns',
-            loadurl: '/pronouns',
-            type   : 'select',
-            submit : 'OK',
-            callback: function(){
-                allowKeypress = true;
-            }
-        });
-
-        // $('.btn-checkin-badge').click(checkInAndBadge);
-
-        $('.btn-checkin').click(checkIn);
-        $('.btn-register').click(register);
-        $('.btn-unregister').click(unregister);
-        $('.btn-badge').click(badge);
-        $('.note-clear').click(clearNote);
-        $('.btn-uncheckin').click(uncheckIn);
-
-        function showActions(){
-            var registered = $('.registered').text();
-            var badged = $('.badged').text();
-            var checkedIn = $('.checked-in').text();
-
-            if (checkedIn === 'Yes'){
-                $('.btn-checkin-badge').hide();
-                $('.btn-checkin').hide();
-                $('.btn-unregister').hide();
-                $('.btn-uncheckin').show();
-            } else {
-                $('.btn-checkin-badge').show();
-                $('.btn-checkin').show();
-                $('.btn-unregister').show();
-                $('.btn-uncheckin').hide();
-            }
-
-            if (badged === 'Yes'){
-                $('.btn-badge').html('<u>B</u>adge Again');
-            } else {
-                $('.btn-badge').html('Print <u>B</u>adge');
-            }
-
-            if (registered === 'Yes'){
-                $('.registered-actions').show();
-                $('.unregistered-actions').hide();
-            } else {
-                $('.registered-actions').hide();
-                $('.unregistered-actions').show();
-            }
-
-        }
-        var metaHeld = false;
-
-        $(document).keydown(function(event){
-
-            var keycode = event.which;
-
-            if (keycode < 65 || keycode >90){
-                metaHeld = true;
-            }
-            if (allowKeypress && !metaHeld){
-                //console.log(keycode);
-
-                if(keycode === 67){ // c
-                    $('#check-in-and-badge-form').submit();
-                } else if ( keycode === 66) { // b
-                    badge();
-                } else if ( keycode === 73) { // i
-                    checkIn();
-                } else if (keycode === 85) { // u
-                    unregister();
-                } else if ( keycode === 82) { // r
-                    register();
-                }
-            }
-        });
-
-        $(document).keyup(function(event){
-
-            var keycode = event.which;
-
-            if (keycode < 65 || keycode >90){
-                metaHeld = false;
-            }
-        });
-
-        function checkIn(){
-            if ($('#attendee-'+id+'-checked-in').text() === 'Yes'){
-                return;
-            }
-            var id = $('.btn-checkin').attr('data-id');
-            $.ajax({
-                method:'POST',
-                url: '/api/attendees/' + id + '/checkin',
-                success: function(data){
-                    if (data.success){
-                        $('#attendee-'+id+'-checked-in').text('Yes');
-                        showActions();
-                        showAlert('success', 'Checked In');
-                    }
-                }
-            });
-        }
-
-        function uncheckIn(){
-            if ($('#attendee-'+id+'-checked-in').text() === 'No'){
-                return;
-            }
-            var id = $('.btn-checkin').attr('data-id');
-            $.ajax({
-                method:'POST',
-                url: '/api/attendees/' + id + '/uncheckin',
-                success: function(data){
-                    if (data.success){
-                        $('#attendee-'+id+'-checked-in').text('No');
-                        showActions();
-                        showAlert('success', 'Unchecked In');
-                    }
-                }
-            });
-        }
-
-        function badge(){
-            var id = $('.btn-badge').attr('data-id');
-            $.ajax({
-                method: 'POST',
-                url: '/api/attendees/' + id + '/badge',
-                success: function(data){
-                    if (data.success){
-                        $('#attendee-'+id+'-badged').text('Yes');
-                        showActions();
-                        showAlert('success','Printed Badge');
-                    }
-                }
-            });
-        }
-        function register(){
-            var id = $('.btn-register').attr('data-id');
-            if ($('#attendee-'+id+'-registered').text() === 'Yes'){
-                return;
-            }
-            $.ajax({
-                method: 'POST',
-                url: '/api/attendees/' + id + '/register',
-                success: function(data){
-                    if (data.success){
-                        $('#attendee-'+id+'-registered').text('Yes');
-                        showActions();
-                        showAlert('success','Registered');
-                    }
-                }
-            });
-        }
-        function unregister(){
-            var id = $('.btn-unregister').attr('data-id');
-            if ($('#attendee-'+id+'-registered').text() === 'No'){
-                return;
-            }
-            $.ajax({
-                method: 'POST',
-                url: '/api/attendees/' + id + '/unregister',
-                success: function(data){
-                    if (data.success){
-                        $('#attendee-'+id+'-registered').text('No');
-                        showActions();
-                        showAlert('success','Unregistered');
-                    }
-                }
-            });
-        }
-
-        function clearNote(){
-            var id = $(this).attr('note-id');
-            $.ajax({
-                method: 'PUT',
-                url: '/api/notes/'+id + '/clear',
-                success: function(data){
-                    if (data.success){
-                        $('#note-'+id).alert('close');
-                    }
-                }
-            });
-        }
+    script(src='/javascripts/showAttendee.js')
 

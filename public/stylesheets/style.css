@@ -144,4 +144,19 @@ a {
 #emptyField {
   display: none;
 }
-
+#attendee-action-bar form{
+  display: inline;
+}
+#attendee-action-bar .btn{
+  margin-right:3px;
+}
+#addNote {
+  margin-top:5px;
+}
+#addNote .form-group {
+  margin-right:3px;
+}
+#note_contents{
+  margin-left:3px;
+  width:600px;
+}
