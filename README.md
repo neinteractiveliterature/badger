@@ -54,3 +54,17 @@ It supports
 
 * support imported ids?
 * documentation
+
+## Admin Guide
+Admins have access to all events, and all functions
+
+### Users
+### Importers
+### Event
+
+## Event Admin Guide
+### Event
+### Attendee
+
+## User Guide
+### Checking in a Attendee

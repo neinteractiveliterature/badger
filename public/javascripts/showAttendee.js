@@ -53,6 +53,7 @@ $('#btn-unregister').click(unregister);
 $('#btn-badge').click(badge);
 $('#btn-showNotes').click(showHideNotes);
 $('#btn-addNote').click(addNote);
+$('#btn-addNoteCancel').click(addNoteCancel);
 
 $('.note-clear').click(clearNote);
 
@@ -242,7 +243,7 @@ function addNote(){
     var action = $(this).attr('action');
     if (action === 'show'){
         $('#addNote').show();
-        $(this).text('Cancel');
+        $(this).text('Cancel Add Note');
         $(this).attr('action', 'cancel');
         disallowKeypress++;
         $('#note_contents').focus();
@@ -252,4 +253,11 @@ function addNote(){
         $(this).text('Add Note');
         $(this).attr('action', 'show');
     }
+}
+function addNoteCancel(e){
+    e.preventDefault();
+    disallowKeypress++;
+    $('#addNote').hide();
+    $('#btn-addNote').text('Add Note');
+    $('#btn-addNote').attr('action', 'show');
 }

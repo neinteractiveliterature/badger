@@ -195,7 +195,7 @@ function checkIn(req, res, next){
     });
 }
 
-function uncheckin(req, res, next){
+function uncheckIn(req, res, next){
     var attendee_id = req.params.id;
     req.models.attendee.get(attendee_id, function(err, attendee){
         if (err) { return next(err); }
@@ -360,7 +360,7 @@ router.get('/:id/showBadge', showBadge);
 
 router.post('/:id/badge', printBadge);
 router.post('/:id/checkin', checkIn);
-router.post('/:id/uncheckin', permission('eventadmin'), checkIn);
+router.post('/:id/uncheckin', permission('eventadmin'), uncheckIn);
 router.post('/:id/register', register);
 router.post('/:id/unregister', unregister);
 

@@ -50,14 +50,14 @@ block content
 
             span(class='registered-actions')
                 form(method="POST", action="/attendees/#{attendee.id}/checkin?badge=true", id='check-in-and-badge-form')
-                    button#btn-checkin-badge(class='btn btn-primary btn-checkin-badge' data-id="#{attendee.id}" type="button") <u>C</u>heck In and Badge
+                    button#btn-checkin-badge(class='btn btn-primary btn-checkin-badge' data-id="#{attendee.id}" type="submit") <u>C</u>heck In and Badge
 
                 button#btn-checkin(class='btn btn-default' data-id="#{attendee.id}" type="button") Check <u>I</u>n
 
                 button#btn-badge(class='btn btn-default' data-id="#{attendee.id}" type="button")!= attendee.badged?'<u>B</u>adge Again':'Print <u>B</u>adge'
 
                 -if(checkPermission('eventadmin'))
-                    button#btn-uncheckin(class='btn btn-default' data-id="#{attendee.id}" type="button") Uncheck In
+                    //button#btn-uncheckin(class='btn btn-default' data-id="#{attendee.id}" type="button") Uncheck In
 
                 button#btn-unregister(class='btn btn-default' data-id="#{attendee.id}" type="button") <u>U</u>nregister
 
@@ -66,10 +66,16 @@ block content
                 button#btn-register(class='btn btn-primary' data-id="#{attendee.id}" type="button") <u>R</u>egister
 
             -if( checkPermission('eventadmin'))
-                button#btn-showNotes(class='btn btn-default' type="button" action="show") Show All Notes
-                span(class="note-actions")
-                    form.form-inline
-                        button#btn-addNote(class='btn btn-default' type="button" action="show") Add Note
+                div.btn-group
+                    button(type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Advanced
+                        | &nbsp;
+                        span.caret
+                    ul.dropdown-menu
+                        li
+                            a#btn-uncheckin(data-id="#{attendee.id}") Uncheck In
+                            a#btn-showNotes(action="show") Show All Notes
+                            a#btn-addNote(action="show") Add Note
+
     -if(checkPermission('eventadmin'))
         .row
             .col-sm-12
@@ -79,45 +85,49 @@ block content
                         label(for='#note_contents' ) New Note:
                         input.form-control#note_contents(type='text' name='note[contents]')
                     button(class='btn btn-primary btn-addNoteSave' data-id="#{attendee.id}" type="submit" action="show") Save
+                    a#btn-addNoteCancel.btn.btn-link Cancel
 
     -if (audits.length && checkPermission('eventadmin'))
-        h3 History
-        div(class='row')
-            div(class='col-sm-12')
-                table(class='table table-striped table-condensed')
-                    thead
-                        tr
-                            th ID
-                            th Timestamp
-                            th User
-                            th Action
-                            th Details
+        .panel#auditHistoryPanel(class="panel-default")
+            .panel-heading#auditHistoryPanelHeading
+                h3.panel-title Audit History
+                    | &nbsp;
+                    span.caret
+            table#auditHistoryTable(class='table table-striped table-condensed table-sorted')
+                thead
+                    tr
+                        th ID
+                        th Timestamp
+                        th User
+                        th Action
+                        th Details
 
-                    tbody
-                        for audit in audits
-                            tr
-                                td= audit.id
-                                td= moment(audit.created).format('MMMM DD YYYY, HH:mm:ss')
-                                td
-                                    - if (checkPermission('admin'))
-                                        a(href='/users/#{audit.user_id}')= audit.user
+                tbody
+                    for audit in audits
+                        tr
+                            td= audit.id
+                            td= moment(audit.created).format('MMMM DD YYYY, HH:mm:ss')
+                            td
+                                - if (checkPermission('admin'))
+                                    a(href='/users/#{audit.user_id}')= audit.user
+                                - else
+                                    = audit.user
+                            td= audit.action
+                            td
+                                - if (_.has(audit.data, 'field'))
+                                    - if (audit.data.old && audit.data.new)
+                                        | Changed #{audit.data.field} from #{audit.data.old} to #{audit.data.new}
+                                    - else if (audit.data.old)
+                                        | Cleared #{audit.data.field} ( was #{audit.data.old} )
                                     - else
-                                        = audit.user
-                                td= audit.action
-                                td
-                                    - if (_.has(audit.data, 'field'))
-                                        - if (audit.data.old && audit.data.new)
-                                            | Changed #{audit.data.field} from #{audit.data.old} to #{audit.data.new}
-                                        - else if (audit.data.old)
-                                            | Cleared #{audit.data.field} ( was #{audit.data.old} )
-                                        - else
-                                            | Set #{audit.data.field} to #{audit.data.new}
-                                    - else if (_.has(audit.data, 'note'))
-                                        | Note #{audit.data.note}
-                    tfoot
-                        +pager
+                                        | Set #{audit.data.field} to #{audit.data.new}
+                                - else if (_.has(audit.data, 'note'))
+                                    | Note #{audit.data.note}
+                tfoot
+                    +pager
 
 append scripts
     script(src='/javascripts/data-table.js')
     script(src='/javascripts/showAttendee.js')
+    script(src='/javascripts/auditHistory.js')
 
