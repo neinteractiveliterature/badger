@@ -32,40 +32,43 @@ block content
 
 
     -if (audits.length && checkPermission('admin'))
-        h3 History
-        div(class='row')
-            div(class='col-sm-12')
-                table(class='table table-striped table-condensed table-sorted')
-                    thead
-                        tr
-                            th ID
-                            th Timestamp
-                            th Type
-                            th Item
-                            th Action
-                            th Details
+        .panel#auditHistoryPanel(class="panel-default")
+            .panel-heading#auditHistoryPanelHeading
+                h3.panel-title Audit History
+                    | &nbsp;
+                    span.caret
+            table#auditHistoryTable(class='table table-striped table-condensed table-sorted')
+                thead
+                    tr
+                        th ID
+                        th Timestamp
+                        th Type
+                        th Item
+                        th Action
+                        th Details
 
-                    tbody
-                        for audit in audits
-                            tr
-                                td= audit.id
-                                td= moment(audit.created).format('MMMM DD YYYY, HH:mm:ss')
-                                td= audit.object_type
-                                td
-                                    a(href='/#{audit.object_type}s/#{audit.object_id}')= audit.object
-                                td= audit.action
-                                td
-                                    - if (_.has(audit.data, 'field'))
-                                        - if (audit.data.old && audit.data.new)
-                                            | Changed #{audit.data.field} from #{audit.data.old} to #{audit.data.new}
-                                        - else if (audit.data.old)
-                                            | Cleared #{audit.data.field} ( was #{audit.data.old} )
-                                        - else
-                                            | Set #{audit.data.field} to #{audit.data.new}
-                                    - else if (_.has(audit.data, 'note'))
-                                        | Note #{audit.data.note}
-                    tfoot
-                        +pager
+                tbody
+                    for audit in audits
+                        tr
+                            td= audit.id
+                            td= moment(audit.created).format('MMMM DD YYYY, HH:mm:ss')
+                            td= audit.object_type
+                            td
+                                a(href='/#{audit.object_type}s/#{audit.object_id}')= audit.object
+                            td= audit.action
+                            td
+                                - if (_.has(audit.data, 'field'))
+                                    - if (audit.data.old && audit.data.new)
+                                        | Changed #{audit.data.field} from #{audit.data.old} to #{audit.data.new}
+                                    - else if (audit.data.old)
+                                        | Cleared #{audit.data.field} ( was #{audit.data.old} )
+                                    - else
+                                        | Set #{audit.data.field} to #{audit.data.new}
+                                - else if (_.has(audit.data, 'note'))
+                                    | Note #{audit.data.note}
+                tfoot
+                    +pager
 
 append scripts
     script(src='/javascripts/data-table.js')
+    script(src='/javascripts/auditHistory.js')

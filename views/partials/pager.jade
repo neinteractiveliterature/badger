@@ -1,5 +1,5 @@
 mixin pager()
-    tr
+    tr#pagerControls
         th(colspan=999 class='ts-pager form-inline')
             button(type='button', class='btn first')
                 i(class='glyphicon glyphicon-step-backward')
@@ -11,7 +11,7 @@ mixin pager()
             button(type='button', class='btn last')
                 i(class='glyphicon glyphicon-step-forward')
             select(class='pagesize form-control',title='select page size')
-                option(selected value=15) 15
+                option(value=15,selected=selected) 15
                 option(value=30) 30
                 option(value=60) 60
                 option(value=100) 100
