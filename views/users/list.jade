@@ -11,6 +11,7 @@ block content
                 th Name
                 th Username
                 th Admin
+                th Locked
                 th Events
         tbody
             for user in users
@@ -19,6 +20,7 @@ block content
                         a(href='/users/#{user.id}')= user.name
                     td= user.username
                     td= user.admin?'Yes':'No'
+                    td= user.locked?'Yes':'No'
                     td
                         ul
                             for event in user.events

@@ -24,10 +24,14 @@ function showLogin(req, res, next){
 }
 
 function postLogin(req, res, next){
-    auth.login(req.body.auth.username, req.body.auth.password, function(err, user){
+    auth.login(req.body.auth.username, req.body.auth.password, function(err, user, message){
         if (err) { return next(err); }
         if (!user){
-            req.flash('loginerror', 'Invalid Username or Password');
+            if (message){
+                req.flash('loginerror', message);
+            } else {
+                req.flash('loginerror', 'Invalid Username or Password');
+            }
             req.session.logindata = req.body.auth;
             res.redirect('/login');
         } else {
