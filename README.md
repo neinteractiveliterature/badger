@@ -35,7 +35,6 @@ It supports
 * Image support for badges
 * delete attendees
 * delete events
-
 * support imported ids?
 * documentation
 
