@@ -11,10 +11,14 @@ var validator = require('validator');
 
 function selectEvent(req, res, next){
     var event_id = req.params.id;
-    badgerHelper.setCurrentEventId(req, event_id, function(err){
-        if (err) { return next(err); }
+    if (res.locals.checkPermission('access', event_id)){
+        badgerHelper.setCurrentEventId(req, event_id, function(err){
+            if (err) { return next(err); }
+            res.redirect('/');
+        });
+    } else {
         res.redirect('/');
-    });
+    }
 }
 
 function list(req, res, next){

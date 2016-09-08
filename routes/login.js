@@ -35,6 +35,18 @@ function postLogin(req, res, next){
             req.session.logindata = req.body.auth;
             res.redirect('/login');
         } else {
+            // check if curent event is valud for this user
+            if (!user.admin && ! _.has(user.events, user.current_event_id)){
+                if (_.keys(user.events).length){
+                    // change to a valid event
+                    user.current_event_id = _.keys(user.events)[0];
+                } else {
+                    // No valid events
+                    req.flash('loginerror', 'User has no valid events');
+                    return res.redirect('/login');
+                }
+            }
+
             req.session.user = user;
             delete req.session.logindata;
 
