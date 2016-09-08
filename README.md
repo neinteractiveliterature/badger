@@ -8,6 +8,7 @@ This software is meant to be run on a print server, connected to at least one ba
 It supports
 * Multiple Events
 * User Permissioning
+    * Locked - no access
     * Admin User - All privs
     * Event User - Create/Edit Attendees for a event (granted per-event)
     * Event Admin - Import data, modify badge layout, view audit log for an event (granted per-event)
@@ -19,20 +20,43 @@ It supports
     * Automatic shrink text to fit
     * Font support
     * Style support
-
-* Import attendee data from CSV
-    * via CLI tool
-    * via Website (in progress)
+* Import attendee data from CSV via CLI tool
 * Per-attendee check-in notes
 * Add attendees at the door
-* Simple search interface for checking in attendees
+* Provides a Simple search interface for checking in attendees
 * Search/filter/sortable lists for attendees, users, events
 * Audit trail of all activity
-* Audit event viewer/exporter (in progress)
 * User mananement via GUI
 
-## Instalation
 
+## TODO
+* edit checkin notes
+* Import attendees via website
+* Image support for badges
+* delete attendees
+* delete events
+
+* support imported ids?
+* documentation
+
+## Glossary
+
+Event
+: A convention, conference, etc
+
+User
+: A login to Badger, for event/user/attendee administration
+
+Attendee
+: A record for a person attending an Event.  Attendee records belong to a single event, even if they represent a person registered for more than one.
+
+Importer
+: A set of rules for importing Attendee data into a Event
+
+## Admin Guide
+Admins have access to all events, and all functions and can manage users
+
+### Instalation
 ```
 # git clone https://github.com/dkapell/badger.git badger
 # cd badger && npm install
@@ -41,28 +65,12 @@ It supports
 # pm2 start badger.pm2.json
 # pm2 save
 ```
-
-## TODO
-* All of the above marked in progress
-    * checkin notes
-        * edit
-    * Import via website
-    * Image support for badges
-    * lock/suspend users
-    * delete attendees
-    * delete events
-
-* support imported ids?
-* documentation
-
-## Admin Guide
-Admins have access to all events, and all functions
-
 ### Users
 ### Importers
 ### Event
 
 ## Event Admin Guide
+Event Admins
 ### Event
 ### Attendee
 

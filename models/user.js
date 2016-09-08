@@ -45,8 +45,8 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into users (name, username, password, admin, current_event_id) values ($1, $2, $3, $4, $5) returning id';
-    var dataArr = [data.name, data.username, data.password, data.admin, data.current_event_id];
+    var query = 'insert into users (name, username, password, admin, locked, current_event_id) values ($1, $2, $3, $4, $5, $6) returning id';
+    var dataArr = [data.name, data.username, data.password, data.admin, data.locked, data.current_event_id];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows[0].id);
@@ -59,8 +59,8 @@ exports.update =  function(id, data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'update users set name = $2, username = $3, password = $4, admin = $5, current_event_id = $6 where id = $1';
-    var dataArr = [id, data.name, data.username, data.password, data.admin, data.current_event_id];
+    var query = 'update users set name = $2, username = $3, password = $4, admin = $5, locked = $6, current_event_id = $7 where id = $1';
+    var dataArr = [id, data.name, data.username, data.password, data.admin, data.locked, data.current_event_id];
     database.query(query, dataArr, cb);
 };
 

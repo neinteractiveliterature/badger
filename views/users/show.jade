@@ -17,11 +17,13 @@ block content
                     tr
                         th Username
                         th Admin
+                        th Locked
                         th Events
                 tbody
                     tr
                         td= user.username
                         td= user.admin?'Yes':'No'
+                        td= user.locked?'Yes':'No'
                         td
                             ul
                                 for event in user.events

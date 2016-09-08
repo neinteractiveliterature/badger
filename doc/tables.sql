@@ -33,6 +33,7 @@ CREATE TABLE users
     password character varying(200),
     admin boolean default false,
     current_event_id int,
+    locked boolean default false,
     created timestamp with time zone NOT NULL DEFAULT now(),
     primary key (id),
     CONSTRAINT user_username_uk UNIQUE(username),

@@ -92,7 +92,8 @@ function create(req, res, next){
     var doc = {
         name: user.name,
         username: user.username,
-        admin: user.admin === 'on'
+        admin: user.admin === 'on',
+        locked: user.locked === 'on'
     };
 
     auth.hash(user.password, function(err, hash){
@@ -145,7 +146,8 @@ function update(req, res, next){
     var doc = {
         name: user.name,
         username: user.username,
-        admin: user.admin === 'on'
+        admin: user.admin === 'on',
+        locked: user.locked === 'on'
     };
 
     if (user.password) {

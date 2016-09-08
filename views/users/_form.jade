@@ -28,6 +28,11 @@ if (checkPermission('admin'))
                 label
                     input(type="checkbox" checked=user.admin name="user[admin]")
                     |  Global Administrator
+         .form-group
+            .checkbox
+                label
+                    input(type="checkbox" checked=user.locked name="user[locked]")
+                    |  Account Locked
         .form-group
             table(class='table table-striped')
                 thead
