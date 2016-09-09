@@ -12,27 +12,28 @@ block content
 
     .row
         .col-sm-12
-            table(class='table table-striped table-condensed')
-                thead
-                    tr
-                        th Name
-                        th Email
-                        th Type
-                        th Registered
-                        th Checked In
-                        th Badged
-                        for field in session.currentEvent.displayFields
-                            th(class="property-name")= field
-                tbody
-                    tr
-                        td(id='attendee-#{attendee.id}-name' class='editable editable-text')= attendee.name
-                        td(id='attendee-#{attendee.id}-email' class='editable editable-text')= attendee.email
-                        td(id='attendee-#{attendee.id}-type' class='editable editable-text')= attendee.type
-                        td(id='attendee-#{attendee.id}-registered' class='registered')= attendee.registered?'Yes':'No'
-                        td(id='attendee-#{attendee.id}-checked-in' class='checked-in')= attendee.checked_in?'Yes':'No'
-                        td(id='attendee-#{attendee.id}-badged' class='badged')= attendee.badged?'Yes':'No'
-                        for field in session.currentEvent.displayFields
-                            td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
+            .table-responsive
+                table(class='table table-striped table-condensed')
+                    thead
+                        tr
+                            th Name
+                            th Email
+                            th Type
+                            th Registered
+                            th Checked In
+                            th Badged
+                            for field in session.currentEvent.displayFields
+                                th(class="property-name")= field
+                    tbody
+                        tr
+                            td(id='attendee-#{attendee.id}-name' class='editable editable-text')= attendee.name
+                            td(id='attendee-#{attendee.id}-email' class='editable editable-text')= attendee.email
+                            td(id='attendee-#{attendee.id}-type' class='editable editable-text')= attendee.type
+                            td(id='attendee-#{attendee.id}-registered' class='registered')= attendee.registered?'Yes':'No'
+                            td(id='attendee-#{attendee.id}-checked-in' class='checked-in')= attendee.checked_in?'Yes':'No'
+                            td(id='attendee-#{attendee.id}-badged' class='badged')= attendee.badged?'Yes':'No'
+                            for field in session.currentEvent.displayFields
+                                td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
 
 
     div#notes

@@ -5,41 +5,42 @@ block content
     a(class='btn btn-success' href='/attendees/new')
         span(class="glyphicon glyphicon-plus")
         |  New Attendee
-    table(class='table table-condensed table-striped table-sorted table-hover')
-        thead
-            tr
-                th Name
-                th Email
-                th(data-value='Yes') Registered
-                th Type
-                th Checked&nbsp;In
-                th Badged
-                for field in session.currentEvent.displayFields
-                    th(class="property-name")= field
-        tbody
-            for attendee in attendees
-                tr(class='clickable-row', data-click-object='attendees' data-click-id='#{attendee.id}')
-                    td
-                        a(href='/attendees/#{attendee.id}')= attendee.name
-                    td= attendee.email
-                    td= attendee.registered?'Yes':'No'
-                    td= attendee.type
-                    td= attendee.checked_in?'Yes':'No'
-                    td= attendee.badged?'Yes':'No'
+    .table-responsive
+        table(class='table table-condensed table-striped table-sorted table-hover')
+            thead
+                tr
+                    th Name
+                    th Email
+                    th(data-value='Yes') Registered
+                    th Type
+                    th Checked&nbsp;In
+                    th Badged
                     for field in session.currentEvent.displayFields
-                        td= attendee.data[field]
+                        th(class="property-name")= field
+            tbody
+                for attendee in attendees
+                    tr(class='clickable-row', data-click-object='attendees' data-click-id='#{attendee.id}')
+                        td
+                            a(href='/attendees/#{attendee.id}')= attendee.name
+                        td= attendee.email
+                        td= attendee.registered?'Yes':'No'
+                        td= attendee.type
+                        td= attendee.checked_in?'Yes':'No'
+                        td= attendee.badged?'Yes':'No'
+                        for field in session.currentEvent.displayFields
+                            td= attendee.data[field]
 
-        tfoot
-            tr
-                th Name
-                th Email
-                th Registered
-                th Type
-                th Checked In
-                th Badged
-                for field in session.currentEvent.displayFields
-                    th(class="property-name")= field
-            +pager
+            tfoot
+                tr
+                    th Name
+                    th Email
+                    th Registered
+                    th Type
+                    th Checked In
+                    th Badged
+                    for field in session.currentEvent.displayFields
+                        th(class="property-name")= field
+                +pager
 
 
 append scripts
