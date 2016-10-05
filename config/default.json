@@ -9,7 +9,11 @@
         "dbURL": "postgres://badger:badger@localhost:5432/badger",
         "sessionType": "local",
         "sessionSecret": "badger",
-        "defaultEventId": 1
+        "defaultEventId": 1,
+        "printOptions":{
+            "copies": 1,
+            "landscape": false
+        }
     },
     "pages": {
         "ppi": 72,
