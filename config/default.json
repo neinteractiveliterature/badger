@@ -1,10 +1,10 @@
 {
     "app": {
         "name": "Badger",
-        "printer": "HP_LaserJet_Professional_P1102w_2",
+        "printer": "EVOLIS_Badgy100",
         "debug": false,
         "defaultFont": "Helvetica",
-        "print": false,
+        "print": true,
         "outputDir": "./output",
         "dbURL": "postgres://badger:badger@localhost:5432/badger",
         "sessionType": "local",
@@ -14,7 +14,7 @@
     "pages": {
         "ppi": 72,
         "default": "cr80",
-            "sizes": {
+        "sizes": {
             "cr80": {
                 "height": 2.125,
                 "width": 3.375,
