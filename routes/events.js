@@ -171,8 +171,6 @@ function update(req, res, next){
         }
         doc.badge = badge;
 
-        return res.redirect('/events/' + id + '/edit');
-
         req.models.event.update(id, doc, function(err){
             if (err){
                 req.flash('error', 'Error saving event: ' + err);
