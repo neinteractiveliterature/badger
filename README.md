@@ -55,12 +55,18 @@ Importer
 ## Admin Guide
 Admins have access to all events, and all functions and can manage users
 
+### Printer setup
+* Add printer to computer
+* Make sure printer has the correct ribbon type selected. (B/W or Color)
+* adjust for landscape if needed (Set env variable BADGER_LANDSCAPE=true)
+* set printer name in env variable BADGER_PRINTER
+
 ### Instalation
 ```
 # git clone https://github.com/dkapell/badger.git badger
 # cd badger && npm install
-# psql -f doc/create_database
-# psql -U badger badger doc/tables.sql
+# sudo -u postgres psql -f doc/create_database.sql
+# psql -U badger badger -f doc/tables.sql
 # pm2 start badger.pm2.json
 # pm2 save
 ```

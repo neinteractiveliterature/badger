@@ -89,7 +89,7 @@ create table notes
     contents text,
     cleared boolean default false,
     created timestamp with time zone NOT NULL DEFAULT now(),
-    primary key (id);
+    primary key (id),
     CONSTRAINT "node_attendee_id_fkey" FOREIGN KEY ("attendee_id")
         REFERENCES attendees ("id") MATCH SIMPLE
         ON UPDATE NO ACTION ON DELETE CASCADE
