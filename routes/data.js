@@ -6,9 +6,9 @@ var async = require('async');
 var _ = require('underscore');
 
 
-function list(req, res, next){
+function listPronouns(req, res, next){
     req.models.pronoun.list(function(err, pronouns){
-        if (err) { return cb(err); }
+        if (err) { return next(err); }
         var list = _.reduce( pronouns, function(o, e){
             o[e.values] = e.values;
             return o;
@@ -34,10 +34,26 @@ function list(req, res, next){
     });
 }
 
+function listTypes(req, res, next){
+    if (!_.has(req, 'session') || !_.has(req.session, 'currentEvent')){
+        return res.json({});
+    }
+    req.models.attendee.listTypesByEvent(req.session.currentEvent.id, function(err, types){
+        if (err) { return next(err); }
+        var list = types.reduce(function(o, e){
+            o[e] = e;
+            return o;
+        }, {});
+        list['Other'] = 'Other';
+        res.json(list);
+    })
+}
+
 router.use(auth.basicAuth);
 router.use(permission('login'));
 
 /* select a new event. */
-router.get('/', list);
+router.get('/pronouns', listPronouns);
+router.get('/types', listTypes);
 
 module.exports = router;

@@ -45,7 +45,27 @@ $('.editable-pronouns').editable(function(value, settings){
 
 }, {
     cssclass: 'edit-pronouns',
-    loadurl: '/pronouns',
+    loadurl: '/data/pronouns',
+    type   : 'select',
+    submit : 'OK',
+    callback: function(){
+        disallowKeypress--;
+    }
+});
+
+$('.editable-type').editable(function(value, settings){
+    var id = $(this).attr('id');
+    if (value === 'Other'){
+        value = prompt('Please enter value')
+    }
+    $.post('/attendees/update', {id: id, value:value}, function(data){
+        $(id).text(data);
+    });
+    return (value);
+
+}, {
+    cssclass: 'edit-type',
+    loadurl: '/data/types',
     type   : 'select',
     submit : 'OK',
     callback: function(){

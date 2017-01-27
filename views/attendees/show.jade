@@ -28,7 +28,7 @@ block content
                         tr
                             td(id='attendee-#{attendee.id}-name' class='editable editable-text')= attendee.name
                             td(id='attendee-#{attendee.id}-email' class='editable editable-text')= attendee.email
-                            td(id='attendee-#{attendee.id}-type' class='editable editable-text')= attendee.type
+                            td(id='attendee-#{attendee.id}-type' class='editable editable-type')= attendee.type
                             td(id='attendee-#{attendee.id}-registered' class='registered')= attendee.registered?'Yes':'No'
                             td(id='attendee-#{attendee.id}-checked-in' class='checked-in')= attendee.checked_in?'Yes':'No'
                             td(id='attendee-#{attendee.id}-badged' class='badged')= attendee.badged?'Yes':'No'
