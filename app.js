@@ -9,7 +9,8 @@ var session = require('express-session');
 var config = require('config');
 var _ = require('underscore');
 var moment = require('moment');
-var methodOverride = require('method-override')
+var methodOverride = require('method-override');
+var redis = require('redis');
 
 
 

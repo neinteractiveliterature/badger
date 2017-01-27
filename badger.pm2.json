@@ -11,7 +11,8 @@
   "env_production" : {
      "BADGER_OUTPUT_DIR":"/tmp/badges",
      "NODE_ENV": "production",
-     "BADGER_PRINTER":"badges"
+     "BADGER_PRINTER":"badges",
+     "BADGER_SESSION_TYPE":"redis"
   }
 
 }
