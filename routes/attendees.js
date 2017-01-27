@@ -76,25 +76,45 @@ function get(req, res, next){
 
 function printBadge(req, res, next){
     var attendee_id = req.params.id;
-    req.models.attendee.get(attendee_id, function(err, attendee){
-        if (err) { return next(err); }
-        badge.print(req.session.currentEvent.badge, attendee, function(err){
-            if (err){ return next(err); }
-            attendee.badged = true;
-            req.models.attendee.update(attendee.id, attendee, function(err){
-                if (err){ return next(err); }
-                req.audit('badge', 'attendee', attendee_id);
-                res.json({success:true});
+    async.waterfall([
+        function(cb){
+            async.parallel({
+                attendee: function(cb){
+                    req.models.attendee.get(attendee_id, cb);
+                },
+                event: function(cb){
+                    req.models.event.get(req.session.currentEvent.id, cb);
+                }
+            },cb);
+        },
+        function(data, cb){
+            badge.print(data.event.badge, data.attendee, function(err){
+                cb(err, data.attendee);
             });
-        });
+        },
+        function(attendee, cb){
+            attendee.badged = true;
+            req.models.attendee.update(attendee.id, attendee, cb);
+        }
+    ], function(err){
+        if (err){ return next(err); }
+        req.audit('badge', 'attendee', attendee_id);
+        res.json({success:true});
     });
 }
 
 function showBadge(req, res, next){
     var attendee_id = req.params.id;
-    req.models.attendee.get(attendee_id, function(err, attendee){
+    async.parallel({
+        attendee: function(cb){
+            req.models.attendee.get(attendee_id, cb);
+        },
+        event: function(cb){
+            req.models.event.get(req.session.currentEvent.id, cb);
+        }
+    }, function(err, data){
         if (err) { return next(err); }
-        badge.print(req.session.currentEvent.badge, attendee, {display:true}, function(err, badge){
+        badge.print(data.event.badge, data.attendee, {display:true}, function(err, badge){
             if (err){ return next(err); }
             if (req.query.download){
                 res.attachment(attendee.name + '.pdf');
@@ -165,7 +185,10 @@ function checkIn(req, res, next){
             if (req.query.badge){
                 async.series([
                     function(cb){
-                        badge.print(req.session.currentEvent.badge, attendeeData, cb);
+                        req.models.event.get(req.session.currentEvent.id, function(err, event){
+                            if (err) { return cb(err); }
+                            badge.print(event.badge, attendeeData, cb);
+                        });
                     },
                     function(cb){
                         attendeeData.badged = true;
