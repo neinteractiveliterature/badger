@@ -258,6 +258,11 @@ function updateAttendee(req, res, next){
         }
     }
 
+    if (req.session.currentEvent.importer.rules.attendee[datafield].type === 'admintext' &&
+        ! res.locals.checkPermission('eventadmin') ){
+        return res.status(403).send('Not Allowed');
+    }
+
     req.models.attendee.get(id, function(err, attendee){
         if (err) { return next(err); }
         var oldValue = null;

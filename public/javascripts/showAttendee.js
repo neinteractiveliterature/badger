@@ -16,6 +16,14 @@ $('.editable-text').editable('/attendees/update', {
         disallowKeypress--;
     }
 });
+
+$('.editable-admintext').editable('/attendees/update', {
+    placeholder: 'Click to set a new value',
+    callback: function(){
+        disallowKeypress--;
+    }
+});
+
 $('.editable-boolean').editable('/attendees/update', {
     data   : " {'Yes':'Yes', 'No':'No' }",
     type   : 'select',
@@ -218,7 +226,7 @@ function clearNote(){
             if (data.success){
                 $('#note-'+id).addClass('note-cleared');
                 $('#note-'+id).find('.note-clear').remove();
-                if ($('#btn-showNotes').attr('action')=== 'show'){
+                if ($('#btn-showNotes').attr('action') !== 'hide'){
                     $('#note-'+id).hide();
                 }
             }
