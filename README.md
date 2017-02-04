@@ -10,8 +10,8 @@ It supports
 * User Permissioning
     * Locked - no access
     * Admin User - All privs
-    * Event User - Create/Edit Attendees for a event (granted per-event)
-    * Event Admin - Import data, modify badge layout, view audit log for an event (granted per-event)
+    * Event User - Create/Edit Attendees for a event, check in attendees, clear notes (granted per-event)
+    * Event Admin - Import data, modify badge layout, create/edit notes, view audit log for an event (granted per-event)
 * Custom attendee fields per event
 * Custom importers
 * Custom badge layout
@@ -30,7 +30,6 @@ It supports
 
 
 ## TODO
-* edit checkin notes
 * Import attendees via website
 * Image support for badges
 * delete attendees

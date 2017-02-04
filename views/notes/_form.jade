@@ -1,0 +1,14 @@
+.form-group
+    label(for="note_attendee_id" class="control-label") Attendee
+    select(class="form-control", name="note[attendee_id]" id="note_attendee_id")
+        for attendee in attendees
+            option(value=attendee.id selected=note.attendee_id === attendee.id)= attendee.name
+
+.form-group
+    label(for="note_contents") Contents
+    textarea(class="form-control", name="note[contents]" id="note_contents")
+        = note.contents
+
+.form-group
+    button.btn.btn-primary(type="submit")= note.id?'Update':'Create'
+    a.btn.btn-link(href="/events") Cancel

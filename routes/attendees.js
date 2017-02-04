@@ -67,7 +67,7 @@ function get(req, res, next){
                     res.render('attendees/show');
                 });
             } else {
-                res.flash('error', 'Attendee not found');
+                req.flash('error', 'Attendee not found');
                 res.redirect('/');
             }
         }
@@ -245,6 +245,10 @@ function updateAttendee(req, res, next){
     if (field === 'data'){
         datafield = parts[3];
         fieldName = 'data.' + datafield;
+        if (req.session.currentEvent.importer.rules.attendee[datafield].type === 'admintext' &&
+           ! res.locals.checkPermission('eventadmin') ){
+            return res.status(403).send('Not Allowed');
+        }
     }
     var storeValue = value;
     if (field === 'registered' ||
@@ -256,11 +260,6 @@ function updateAttendee(req, res, next){
         } else if (value === 'No'){
             storeValue = false;
         }
-    }
-
-    if (req.session.currentEvent.importer.rules.attendee[datafield].type === 'admintext' &&
-        ! res.locals.checkPermission('eventadmin') ){
-        return res.status(403).send('Not Allowed');
     }
 
     req.models.attendee.get(id, function(err, attendee){

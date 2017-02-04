@@ -1,0 +1,17 @@
+extends ../layout
+
+block content
+    ol(class='breadcrumb')
+        li
+            a(href='/notes') Notes
+        li
+            a(href='/notes/#{note.id}')= note.id
+        li(class='active') Edit
+
+    div(class='row')
+        div(class='col-sm-8 col-sm-offset-2')
+            +panel-default('Edit Note ' + note.id + ' for ' + attendees[note.attendee_id].name)
+                form(class='form' role='form' data-toggle='validator' method='POST' action='/notes/#{note.id}')
+                    input(type='hidden', name='_method',  value='PUT')
+                    input(type='hidden', name='note[id]',value=note.id)
+                    include ./_form.jade

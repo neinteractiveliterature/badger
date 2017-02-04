@@ -26,20 +26,25 @@ block content
                                 th(class="property-name")= field
                     tbody
                         tr
-                            td(id='attendee-#{attendee.id}-name' class='editable editable-text')= attendee.name
-                            td(id='attendee-#{attendee.id}-email' class='editable editable-text')= attendee.email
-                            td(id='attendee-#{attendee.id}-type' class='editable editable-type')= attendee.type
+                            td
+                                div(id='attendee-#{attendee.id}-name' class='editable editable-text')= attendee.name
+                            td
+                                div(id='attendee-#{attendee.id}-email' class='editable editable-text')= attendee.email
+                            td
+                                div(id='attendee-#{attendee.id}-type' class='editable editable-type')= attendee.type
                             td(id='attendee-#{attendee.id}-registered' class='registered')= attendee.registered?'Yes':'No'
                             td(id='attendee-#{attendee.id}-checked-in' class='checked-in')= attendee.checked_in?'Yes':'No'
                             td(id='attendee-#{attendee.id}-badged' class='badged')= attendee.badged?'Yes':'No'
                             for field in session.currentEvent.displayFields
                                 -if (session.currentEvent.importer.rules.attendee[field].type === 'admintext')
                                     -if(checkPermission('eventadmin'))
-                                        td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-admintext")= attendee.data[field]
+                                        td
+                                            div(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-admintext")= attendee.data[field]
                                     -else
                                         td(id='attendee-#{attendee.id}-data-#{field}' class="property-name")= attendee.data[field]
                                 -else
-                                    td(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
+                                    td
+                                        div(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
 
 
     div#notes
@@ -47,10 +52,17 @@ block content
             .col-sm-12
                 for note in attendee.notes
                     .alert.alert(role="alert",class="alert-info fade in note #{note.cleared?'note-cleared':''}", id='note-#{note.id}')
-                        p= note.contents
+                        -if(checkPermission('eventadmin') && !note.cleared)
+                            p(id="note-#{note.id}-contents" class="editable-note")= note.contents
+                        -else
+                            p= note.contents
+
                         -if (! note.cleared)
-                            p
-                                button(class="btn btn-primary btn-sm note-clear" note-id='#{note.id}') Clear
+                            div.row
+                                div.col-sm-12(id='note-action-bar')
+                                    button(class="btn btn-primary btn-sm note-clear" note-id='#{note.id}') Clear
+                                    -if (checkPermission('eventadmin') && !note.cleared)
+                                        button(class="btn btn-default btn-sm note-edit" note-id="#{note.id}") Edit
 
     div.row
         div.col-sm-12(id='attendee-action-bar')
@@ -88,6 +100,7 @@ block content
             .col-sm-12
                 form.form-inline#addNote(class="form" method="POST" action="/notes")
                     input(type="hidden" name="note[attendee_id]" value=attendee.id)
+                    input(type="hidden" name="backto" value='attendee')
                     div.form-group
                         label(for='#note_contents' ) New Note:
                         input.form-control#note_contents(type='text' name='note[contents]')

@@ -150,6 +150,13 @@ a {
 #attendee-action-bar .btn{
   margin-right:3px;
 }
+#note-action-bar{
+  padding-top:10px;
+}
+
+#note-action-bar .btn{
+  margin-right:3px;
+}
 #addNote {
   margin-top:5px;
 }
@@ -168,3 +175,21 @@ a {
 .table-responsive{
   margin-top: 15px;
 }
+
+.editable{
+  border-bottom: 1px DarkGrey dashed;
+}
+.editable:hover{
+  cursor: pointer;
+  border-bottom: 1px blue dashed;
+}
+.editable-note:hover{
+  cursor: pointer;
+  border-bottom: 1px blue dashed;
+}
+
+.edit-placeholder{
+  font-style: italic;
+  color: gray;
+}
+

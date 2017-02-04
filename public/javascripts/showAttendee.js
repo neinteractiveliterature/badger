@@ -9,16 +9,24 @@ $('.editable').on('click', function(){
     disallowKeypress++;
 });
 
+$('.editable-note').on('click', function(){
+    disallowKeypress++;
+});
+
+$('.note-edit').on('click', function(){
+    var id = $(this).attr('note-id');
+    $('#note-'+id+'-contents').click();
+});
 
 $('.editable-text').editable('/attendees/update', {
-    placeholder: 'Click to set a new value',
-    callback: function(){
+    placeholder: '<span class="edit-placeholder">Click to set a new value</span>',
+    callback: function(value, settings){
         disallowKeypress--;
     }
 });
 
 $('.editable-admintext').editable('/attendees/update', {
-    placeholder: 'Click to set a new value',
+    placeholder: '<span class="edit-placeholder">Click to set a new value</span>',
     callback: function(){
         disallowKeypress--;
     }
@@ -47,7 +55,9 @@ $('.editable-pronouns').editable(function(value, settings){
     cssclass: 'edit-pronouns',
     loadurl: '/data/pronouns',
     type   : 'select',
-    submit : 'OK',
+    cancel: '<button class="btn btn-danger btn-xs" type="cancel" ><span class="glyphicon glyphicon-remove"></span></button>',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
+
     callback: function(){
         disallowKeypress--;
     }
@@ -67,11 +77,22 @@ $('.editable-type').editable(function(value, settings){
     cssclass: 'edit-type',
     loadurl: '/data/types',
     type   : 'select',
-    submit : 'OK',
+    cancel: '<button class="btn btn-danger btn-xs" type="cancel" ><span class="glyphicon glyphicon-remove"></span></button>',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
     callback: function(){
         disallowKeypress--;
     }
 });
+
+$('.editable-note').editable('/notes/update', {
+    placeholder: '<span class="edit-placeholder">Click to set a new value</span>',
+    callback: function(value, settings){
+        disallowKeypress--;
+    },
+    cancel: '<button class="btn btn-danger btn-xs" type="cancel" ><span class="glyphicon glyphicon-remove"></span> Cancel</button>',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span> Save</button>',
+});
+
 
 
 $('#btn-checkin').click(checkIn);
@@ -246,6 +267,7 @@ function clearNote(){
             if (data.success){
                 $('#note-'+id).addClass('note-cleared');
                 $('#note-'+id).find('.note-clear').remove();
+                $('#note-'+id).find('.note-edit').remove();
                 if ($('#btn-showNotes').attr('action') !== 'hide'){
                     $('#note-'+id).hide();
                 }
