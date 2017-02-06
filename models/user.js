@@ -115,7 +115,7 @@ function validate(data){
     if (! validator.isLength(data.name, 2, 255)){
         return false;
     }
-    if (! validator.isLength(data.username, 3, 20)){
+    if (! validator.isLength(data.username, 3, 100)){
         return false;
     }
     return true;

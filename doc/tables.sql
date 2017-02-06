@@ -29,7 +29,7 @@ CREATE TABLE users
 (
     id serial,
     name character varying(120),
-    username character varying(20),
+    username character varying(100),
     password character varying(200),
     admin boolean default false,
     current_event_id int,
