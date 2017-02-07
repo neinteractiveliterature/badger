@@ -360,6 +360,7 @@ function create(req, res, next){
                 req.session.attendeeData = attendee;
                 return res.redirect('/attendee/new');
             }
+            req.audit('create', 'attendee', attendee_id);
             req.flash('success', 'Attendee Created');
             if (req.query.backto){
                 res.redirect(req.query.backto);
