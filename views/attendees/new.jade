@@ -35,7 +35,7 @@ block content
                     each field, name in session.currentEvent.importer.rules.attendee
                         -if (field.type === 'type' || field.type==='email' || field.type==='name')
                             -continue
-                        -if (field.type === 'admintext' && !checkPermission('eventadmin'))
+                        -if (field.admin === true && !checkPermission('eventadmin'))
                             -continue
                         -if (field.type === 'pronouns')
                             .form-group

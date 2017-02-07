@@ -25,13 +25,6 @@ $('.editable-text').editable('/attendees/update', {
     }
 });
 
-$('.editable-admintext').editable('/attendees/update', {
-    placeholder: '<span class="edit-placeholder">Click to set a new value</span>',
-    callback: function(){
-        disallowKeypress--;
-    }
-});
-
 $('.editable-boolean').editable('/attendees/update', {
     data   : " {'Yes':'Yes', 'No':'No' }",
     type   : 'select',

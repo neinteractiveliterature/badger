@@ -36,16 +36,12 @@ block content
                             td(id='attendee-#{attendee.id}-checked-in' class='checked-in')= attendee.checked_in?'Yes':'No'
                             td(id='attendee-#{attendee.id}-badged' class='badged')= attendee.badged?'Yes':'No'
                             for field in session.currentEvent.displayFields
-                                -if (session.currentEvent.importer.rules.attendee[field].type === 'admintext')
-                                    -if(checkPermission('eventadmin'))
-                                        td
-                                            div(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-admintext")= attendee.data[field]
-                                    -else
-                                        td(id='attendee-#{attendee.id}-data-#{field}' class="property-name")= attendee.data[field]
-                                -else
+                                -if (! session.currentEvent.importer.rules.attendee[field].admin ||checkPermission('eventadmin') )
                                     td
                                         div(id='attendee-#{attendee.id}-data-#{field}' class="property-name editable editable-#{session.currentEvent.importer.rules.attendee[field].type||'text'}")= attendee.data[field]
 
+                                -else
+                                    td(id='attendee-#{attendee.id}-data-#{field}' class="property-name")= attendee.data[field]
 
     div#notes
         .row
