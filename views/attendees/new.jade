@@ -35,6 +35,8 @@ block content
                     each field, name in session.currentEvent.importer.rules.attendee
                         -if (field.type === 'type' || field.type==='email' || field.type==='name')
                             -continue
+                        -if (field.type === 'admintext' && !checkPermission('eventadmin'))
+                            -continue
                         -if (field.type === 'pronouns')
                             .form-group
                                 label(for="data-#{name}" class="control-label property-name")= name
