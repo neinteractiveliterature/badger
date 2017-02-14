@@ -37,7 +37,7 @@ $().ready(function () {
         source: attendees.ttAdapter()
     }).on('typeahead:select', function(e, item){
         window.location.href='/attendees/' + item.id + '?from=search';
-    }).on('typeahead:autoselect', function(e, item){
+    }).on('typeahead:autocomplete', function(e, item){
         window.location.href='/attendees/' + item.id + '?from=search';
     });
 

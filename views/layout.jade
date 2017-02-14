@@ -93,6 +93,7 @@ html(lang="en")
                             +nav_item_dropdown('#', siteSection==='admin'?"active":null)(label='Admin')
                                 +nav_item("/notes") Notes
                                 - if (checkPermission('admin'))
+                                    +nav_item("/devices") Devices
                                     +nav_item("/users") Users
                                     +nav_item("/events") Events
                                     +nav_item("/importers") Importers

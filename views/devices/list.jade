@@ -1,0 +1,42 @@
+extends ../layout
+
+block content
+    h2 Devices
+    .table-responsive
+        table(class='table table-striped table-condensed table-sorted table-hover')
+            thead
+                tr
+                    th Name
+                    th Status
+                    th Type
+                    th Jobs
+                    th Actions
+            tbody
+                for device in devices
+                    tr(class='clickable-row', data-click-object='devices' data-click-id='#{device.name}')
+                        td
+                            a(href='/devices/#{device.name}')= device.options['printer-info']
+                        td= device.status.toLowerCase() + ' ( ' + device.options['printer-state-reasons'].replace(/-(report|warning|error)$/, '') + ' )'
+                        td= device.options['printer-make-and-model']
+                        td(class="job-count")= device.jobs ? device.jobs.length : 0
+                        td
+                            -if (device.jobs && device.jobs.length)
+                                button(class='btn btn-xs btn-default clear-jobs-button' type='button' data-device='#{device.name}' ) Clear Jobs
+    pre= JSON.stringify(devices, null, 2)
+append scripts
+    script.
+        $('.clear-jobs-button').on('click', function(e){
+            var $this = $(this);
+            var printerName = $this.attr('data-device');
+            var $countfield = $this.parent().parent().find(".job-count");
+            console.log($countfield);
+            $.ajax({
+                url: '/devices/' + printerName + '/clear',
+                type: 'POST',
+                data:{_method: 'PUT'},
+                success: function(result) {
+                    $countfield.text(result.length);
+                    $this.hide();
+                }
+            });
+        });

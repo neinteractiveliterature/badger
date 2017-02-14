@@ -10,9 +10,9 @@
   },
   "env_production" : {
      "NODE_ENV": "production",
-     "BADGER_PRINTER":"badges",
+     "BADGER_PRINTER":"EVOLIS-Badgy100-2",
      "BADGER_SESSION_TYPE":"redis",
-     "BADGER_OUTPUT_DIR":"/tmp/badges",
+     "BADGER_OUTPUT_DIR":"/tmp",
   }
 
 }

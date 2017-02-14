@@ -93,10 +93,6 @@ a {
   margin: 0;
 }
 
-.property-name {
-  text-transform: capitalize;
-}
-
 #attendee-result {
   width:253px;
   height:220px;

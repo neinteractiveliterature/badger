@@ -1,7 +1,7 @@
 {
     "app": {
         "name": "Badger",
-        "printer": "EVOLIS_Badgy100",
+        "printer": "EVOLIS-Badgy100",
         "debug": false,
         "defaultFont": "Helvetica",
         "print": true,

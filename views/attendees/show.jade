@@ -48,7 +48,7 @@ block content
             .col-sm-12
                 for note in attendee.notes
                     .alert.alert(role="alert",class="alert-info fade in note #{note.cleared?'note-cleared':''}", id='note-#{note.id}')
-                        -if(checkPermission('eventadmin') && !note.cleared)
+                        -if(!note.cleared)
                             p(id="note-#{note.id}-contents" class="editable-note")= note.contents
                         -else
                             p= note.contents
@@ -57,7 +57,7 @@ block content
                             div.row
                                 div.col-sm-12(id='note-action-bar')
                                     button(class="btn btn-primary btn-sm note-clear" note-id='#{note.id}') Clear
-                                    -if (checkPermission('eventadmin') && !note.cleared)
+                                    -if (note.cleared)
                                         button(class="btn btn-default btn-sm note-edit" note-id="#{note.id}") Edit
 
     div.row
@@ -90,18 +90,19 @@ block content
                             a#btn-uncheckin(data-id="#{attendee.id}") Uncheck In
                             a#btn-showNotes(action="show") Show All Notes
                             a#btn-addNote(action="show") Add Note
+            -else
+                button#btn-addNote(class='btn btn-default' type="button" action="show" ) Add Note
 
-    -if(checkPermission('eventadmin'))
-        .row
-            .col-sm-12
-                form.form-inline#addNote(class="form" method="POST" action="/notes")
-                    input(type="hidden" name="note[attendee_id]" value=attendee.id)
-                    input(type="hidden" name="backto" value='attendee')
-                    div.form-group
-                        label(for='#note_contents' ) New Note:
-                        input.form-control#note_contents(type='text' name='note[contents]')
-                    button(class='btn btn-primary btn-addNoteSave' data-id="#{attendee.id}" type="submit" action="show") Save
-                    a#btn-addNoteCancel.btn.btn-link Cancel
+    .row
+        .col-sm-12
+            form.form-inline#addNote(class="form" method="POST" action="/notes")
+                input(type="hidden" name="note[attendee_id]" value=attendee.id)
+                input(type="hidden" name="backto" value='attendee')
+                div.form-group
+                    label(for='#note_contents' ) New Note:
+                    input.form-control#note_contents(type='text' name='note[contents]')
+                button(class='btn btn-primary btn-addNoteSave' data-id="#{attendee.id}" type="submit" action="show") Save
+                a#btn-addNoteCancel.btn.btn-link Cancel
 
     -if (audits.length && checkPermission('eventadmin'))
         .panel#auditHistoryPanel(class="panel-default")

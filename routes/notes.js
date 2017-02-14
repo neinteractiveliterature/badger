@@ -164,12 +164,12 @@ router.use(auth.basicAuth);
 router.use(permission('access'));
 
 router.get('/',         permission('admin'), list);
-router.get('/new',      permission('eventadmin'), showNew);
+router.get('/new',      showNew);
 router.get('/:id', show);
-router.get('/:id/edit', permission('eventadmin'), showEdit);
-router.post('/',        permission('eventadmin'), create);
-router.put('/:id',      permission('eventadmin'), update);
+router.get('/:id/edit', showEdit);
+router.post('/',        create);
+router.put('/:id',      update);
 router.put('/:id/clear', clear);
-router.post('/update',  permission('eventadmin'), updateNote);
+router.post('/update',  updateNote);
 
 module.exports = router;

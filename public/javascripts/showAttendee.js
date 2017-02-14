@@ -48,9 +48,7 @@ $('.editable-pronouns').editable(function(value, settings){
     cssclass: 'edit-pronouns',
     loadurl: '/data/pronouns',
     type   : 'select',
-    cancel: '<button class="btn btn-danger btn-xs" type="cancel" ><span class="glyphicon glyphicon-remove"></span></button>',
-    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
-
+    onblur : 'submit',
     callback: function(){
         disallowKeypress--;
     }
@@ -70,9 +68,8 @@ $('.editable-type').editable(function(value, settings){
     cssclass: 'edit-type',
     loadurl: '/data/types',
     type   : 'select',
-    cancel: '<button class="btn btn-danger btn-xs" type="cancel" ><span class="glyphicon glyphicon-remove"></span></button>',
-    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
-    callback: function(){
+    onblur : 'submit',
+     callback: function(){
         disallowKeypress--;
     }
 });

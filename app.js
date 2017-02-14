@@ -28,6 +28,7 @@ var data = require('./routes/data');
 var notes = require('./routes/notes');
 var preferences = require('./routes/preferences');
 var importers = require('./routes/importers');
+var devices = require('./routes/devices');
 
 
 var app = express();
@@ -134,6 +135,8 @@ app.use('/data', data);
 app.use('/api/data', data);
 app.use('/notes', notes);
 app.use('/api/notes', notes);
+app.use('/devices', devices);
+app.use('/api/devices', devices);
 app.use('/importers', importers);
 app.use('/api/importers', importers);
 
