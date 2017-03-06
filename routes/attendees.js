@@ -203,7 +203,13 @@ function checkIn(req, res, next){
             }
         }
     ], function(err){
-        if (err) { return next(err); }
+        if (err) {
+            if (req.originalUrl.match(/\/api\//)){
+                return next(err);
+            }
+            req.flash('error', err);
+            return res.redirect('/attendees/' + attendee_id);
+        }
         if (req.originalUrl.match(/\/api\//)){
             res.json({success:true});
         } else {
@@ -212,7 +218,7 @@ function checkIn(req, res, next){
                 res.redirect('/');
             } else {
                 req.flash('success', 'Checked in'+ attendeeData.name);
-                res.redirect('/attendees' + attendee_id);
+                res.redirect('/attendees/' + attendee_id);
             }
         }
     });
@@ -360,7 +366,7 @@ function create(req, res, next){
                 req.session.attendeeData = attendee;
                 return res.redirect('/attendee/new');
             }
-            req.audit('create', 'attendee', attendee_id);
+            req.audit('create', 'attendee', id);
             req.flash('success', 'Attendee Created');
             if (req.query.backto){
                 res.redirect(req.query.backto);

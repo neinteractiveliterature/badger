@@ -16,8 +16,17 @@ function list(req, res, next){
         res.json(printerHelper.list());
     } else {
         var deviceList = printerHelper.list();
-        res.locals.devices = deviceList;
-        res.render('devices/list');
+        async.map(deviceList, function(device, cb){
+            req.models.device.getByName(device.name, function(err, data){
+                if (err) { return cb(err); }
+                device.active = data.active;
+                cb(null, device);
+            });
+        }, function(err){
+            if (err) { return next(err); }
+            res.locals.devices = deviceList;
+            res.render('devices/list');
+        });
     }
 }
 
@@ -32,10 +41,43 @@ function clearQueue(req, res, next){
     });
 }
 
+function activate(req, res, next){
+    var printerName = req.params.name;
+    req.models.device.getByName(printerName, function(err, printer){
+        if (err) { return next(err); }
+        if (!printer){
+            return next ('No Printer Found');
+        }
+        printer.active = true;
+        req.models.device.update(printer.id, printer, function(err){
+            if (err) { return next(err); }
+            res.json({success:true});
+        });
+    });
+}
+
+function deactivate(req, res, next){
+    var printerName = req.params.name;
+    req.models.device.getByName(printerName, function(err, printer){
+        if (err) { return next(err); }
+        if (!printer){
+            return next ('No Printer Found');
+        }
+        printer.active = false;
+        req.models.device.update(printer.id, printer, function(err){
+            if (err) { return next(err); }
+            res.json({success:true});
+        });
+    });
+}
+
+
 router.use(auth.basicAuth);
 router.use(permission('access'));
 
 router.get('/', list);
 router.put('/:name/clear', clearQueue);
+router.put('/:name/activate', permission('admin'), activate);
+router.put('/:name/deactivate', permission('admin'), deactivate);
 
 module.exports = router;

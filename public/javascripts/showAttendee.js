@@ -7,6 +7,8 @@ $('#addNote').hide();
 
 $('.editable').on('click', function(){
     disallowKeypress++;
+    $('#btn-badge').prop('disabled', true);
+    $('#btn-checkin-badge').prop('disabled', true);
 });
 
 $('.editable-note').on('click', function(){
@@ -22,6 +24,8 @@ $('.editable-text').editable('/attendees/update', {
     placeholder: '<span class="edit-placeholder">Click to set a new value</span>',
     callback: function(value, settings){
         disallowKeypress--;
+        $('#btn-badge').prop('disabled', false);
+        $('#btn-checkin-badge').prop('disabled', false);
     }
 });
 
@@ -29,8 +33,11 @@ $('.editable-boolean').editable('/attendees/update', {
     data   : " {'Yes':'Yes', 'No':'No' }",
     type   : 'select',
     onblur : 'submit',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
     callback: function(){
         disallowKeyPress--;
+        $('#btn-badge').prop('disabled', false);
+        $('#btn-checkin-badge').prop('disabled', false);
         showActions();
     }
 });
@@ -49,8 +56,11 @@ $('.editable-pronouns').editable(function(value, settings){
     loadurl: '/data/pronouns',
     type   : 'select',
     onblur : 'submit',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
     callback: function(){
         disallowKeypress--;
+        $('#btn-badge').prop('disabled', false);
+        $('#btn-checkin-badge').prop('disabled', false);
     }
 });
 
@@ -69,8 +79,11 @@ $('.editable-type').editable(function(value, settings){
     loadurl: '/data/types',
     type   : 'select',
     onblur : 'submit',
-     callback: function(){
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
+    callback: function(){
         disallowKeypress--;
+        $('#btn-badge').prop('disabled', false);
+        $('#btn-checkin-badge').prop('disabled', false);
     }
 });
 
@@ -209,6 +222,15 @@ function badge(){
                 $('#attendee-'+id+'-badged').text('Yes');
                 showActions();
                 showAlert('success','Printed Badge');
+            }
+        },
+        error: function(jqxhr) {
+            try{
+                var data = JSON.parse(jqxhr.responseText);
+                showAlert('danger', data.err);
+            }
+            catch(e){
+                showAlert('danger', jqxhr.responseText);
             }
         }
     });

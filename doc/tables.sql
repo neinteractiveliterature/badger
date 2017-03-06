@@ -9,7 +9,6 @@ create table importers
 
 insert into importers (name, rules) values ('intercon', '{"attendee":{"name":{"field":["FirstName"," ","LastName"],"type":"name"},"badgename":{"field":"Nickname","display":true},"type":{"field":"Status","map":{"Alumni":"Unpaid"},"display":true,"type":"type"},"email":{"field":"EMail","type":"email"},"pronouns":{"field":"PreferredCharacterGender","map":{"Male":"He/Him/His","Female":"She/Her/Hers"},"type":"pronouns","display":true}},"notes":[{"field":"IsGM","map":{"0":"","1":"Is a GM, gets a patch"}},{"field":"ShirtOrder"}]}');
 
-
 CREATE TABLE events
 (
     id serial,
@@ -123,3 +122,12 @@ insert into pronouns (values, freeform) values ('He/Him/His', false);
 insert into pronouns (values, freeform) values ('They/Them/Theirs', false);
 insert into pronouns (values, freeform) values ('No pronouns, use my name', false);
 insert into pronouns (values, freeform) values ('Other', true);
+
+create table devices
+(
+    id serial,
+    name varchar(250),
+    active boolean default false,
+    CONSTRAINT devices_name_ukey UNIQUE (name),
+    primary key (id)
+);

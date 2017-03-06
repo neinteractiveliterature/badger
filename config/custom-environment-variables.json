@@ -1,6 +1,5 @@
 {
     "app": {
-        "printer": "BADGER_PRINTER",
         "debug": "BADGER_DEBUG",
         "print": "BADGER_PRINT",
         "outputDir": "BADGER_OUTPUT_DIR",
