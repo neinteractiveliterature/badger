@@ -10,7 +10,7 @@ block content
         p
             strong Importer:
             =" "
-            a(href='/importers/#{event.importer_id}')= event.importer.name
+            a(href='/importers/' + event.importer_id)= event.importer.name
     p=event.description
     h3 Attendees
     div(class='row')
@@ -61,7 +61,7 @@ block content
                                         - values.push("<strong>"+property + "</strong>: " + value)
                                     | !{values}
     if(checkPermission({event:event.id, type:'admin'}))
-        a(class="btn btn-default" href='/events/#{event.id}/edit')
+        a(class="btn btn-default" href='/events/' + event.id + '/edit')
             span(class="glyphicon glyphicon-edit")
             |  Edit
 

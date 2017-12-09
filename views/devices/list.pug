@@ -17,21 +17,17 @@ block content
                     - var rowClass = 'clickable-row'
                     - if (device.active)
                         - rowClass += ' success'
-                    tr(class=rowClass, data-click-object='devices' data-click-id='#{device.name}')
-                        td
-                            a(href='/devices/#{device.name}')
-                                span.glyphicon.glyphicon-print
-                                | &nbsp;
-                                =  device.name
+                    tr(class=rowClass)
+                        td= device.name
                         td(class="printer-active")= device.active?'Yes':'No'
                         td= device.status.toLowerCase() + ' ( ' + device.options['printer-state-reasons'].replace(/-(report|warning|error)$/, '') + ' )'
                         td= device.options['printer-make-and-model']
                         td(class="job-count")= device.jobs ? device.jobs.length : 0
                         td
                             -if (device.jobs && device.jobs.length)
-                                button(class='btn btn-xs btn-default clear-jobs-button' type='button' data-device='#{device.name}' ) Clear Jobs
+                                button(class='btn btn-xs btn-default clear-jobs-button' type='button' data-device=device.name ) Clear Jobs
                             -if (checkPermission('admin'))
-                                button(class='btn btn-xs btn-default activate-printer-button' type='button' data-device='#{device.name}')= device.active ? 'Deactivate' : 'Activate'
+                                button(class='btn btn-xs btn-default activate-printer-button' type='button' data-device=device.name)= device.active ? 'Deactivate' : 'Activate'
 
 append scripts
     script(src='/javascripts/devices.js')

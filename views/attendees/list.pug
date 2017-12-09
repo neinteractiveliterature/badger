@@ -19,9 +19,9 @@ block content
                         th(class="property-name")= field
             tbody
                 for attendee in attendees
-                    tr(class='clickable-row', data-click-object='attendees' data-click-id='#{attendee.id}')
+                    tr(class='clickable-row', data-click-object='attendees' data-click-id=attendee.id)
                         td
-                            a(href='/attendees/#{attendee.id}')= attendee.name
+                            a(href='/attendees/' + attendee.id )= attendee.name
                         td= attendee.email
                         td= attendee.registered?'Yes':'No'
                         td= attendee.type

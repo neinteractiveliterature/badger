@@ -3,16 +3,17 @@ extends ../layout
 block content
     ol(class="breadcrumb")
         li
-            a(href='/users') Users
+            a(href='/importers') Importers
         li
-            a(href='/users/#{user.id}')= user.name
+            a(href='/importers/' + importer.id)= importer.name
         li(class="active") Edit
 
     div(class="row")
         div(class="col-sm-8 col-sm-offset-2")
-            +panel-default('Edit User: '+ user.name)
-                form(class="form" role="form" data-toggle="validator" method="POST" action="/users/#{user.id}")
+            +panel-default('Edit Importer: '+ importer.name)
+                form(class="form" data-toggle="validator" method="POST" action='/importers/' + importer.id)
                     input(type="hidden", name="_method",  value="PUT")
                     input(type="hidden", name='_csrf',value=csrfToken)
-                    input(type="hidden", name='user[id]',value=user.id)
+                    input(type="hidden", name='importer[id]',value=importer.id)
                     include ./_form.jade
+

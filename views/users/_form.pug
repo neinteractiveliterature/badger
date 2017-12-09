@@ -45,9 +45,9 @@ if (checkPermission('admin'))
                         tr
                             td= event.name
                             td
-                                input(type="checkbox" name="user[events][event-#{event.id}][access]" checked=user.events[event.id])
+                                input(type="checkbox" name="user[events][event-" + event.id + "][access]" checked=user.events[event.id])
                             td
-                                input(type="checkbox" name="user[events][event-#{event.id}][admin]" checked=user.events[event.id] && user.events[event.id].admin)
+                                input(type="checkbox" name="user[events][event-" + event.id + "][admin]" checked=user.events[event.id] && user.events[event.id].admin)
 
 .form-group
     button.btn.btn-primary(type="submit")= user.id?'Update':'Create'

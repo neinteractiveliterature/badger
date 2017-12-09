@@ -15,10 +15,10 @@ block content
                     th Name
             tbody
                 for importer in importers
-                    tr(class='clickable-row', data-click-object='importers' data-click-id='#{importer.id}')
+                    tr(class='clickable-row', data-click-object='importers' data-click-id=importer.id)
                         td= importer.id
                         td
-                            a(href='/importers/#{importer.id}')= importer.name
+                            a(href='/importers/' + importer.id)= importer.name
             tfoot
                 +pager
 

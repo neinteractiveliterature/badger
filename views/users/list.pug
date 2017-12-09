@@ -16,9 +16,9 @@ block content
                     th Events
             tbody
                 for user in users
-                    tr(class='clickable-row', data-click-object='users' data-click-id='#{user.id}')
+                    tr(class='clickable-row', data-click-object='users' data-click-id=user.id)
                         td
-                            a(href='/users/#{user.id}')= user.name
+                            a(href='/users/' + user.id)= user.name
                         td= user.username
                         td= user.admin?'Yes':'No'
                         td= user.locked?'Yes':'No'

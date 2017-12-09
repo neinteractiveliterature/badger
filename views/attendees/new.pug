@@ -39,7 +39,7 @@ block content
                             -continue
                         -if (field.type === 'pronouns')
                             .form-group
-                                label(for="data-#{name}" class="control-label property-name")= name
+                                label(for="data-" + name class="control-label property-name")= name
                                 select(class="form-control", name="attendee[data][pronouns]" id='attendee_data_pronouns')
                                     for pronoun in pronouns
                                         option(value=pronoun.values selected=attendee.pronouns === pronoun.values)= pronoun.values
@@ -48,8 +48,8 @@ block content
                                 input.form-control(type="text", class="additional-option",placeholder="Pronouns",name="attendee[data][userpronouns]",value=attendee.data.userpronouns,id='attendee_data_user_pronouns')
                         -else
                             .form-group(class='has-feedback')
-                                label(for="data-#{name}" class="control-label property-name")= name
-                                input.form-control(type="text",placeholder="#{name}",name="attendee[data][#{name}]",value=attendee.data[name],id='attendee_data_#{name}')
+                                label(for="data-" + name class="control-label property-name")= name
+                                input.form-control(type="text",placeholder=name,name="attendee[data][" + name + "]",value=attendee.data[name],id='attendee_data_' + name )
                                 span(class="glyphicon form-control-feedback" aria-hidden="true")
                                 div(class="help-block with-errors")
 

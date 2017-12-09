@@ -24,7 +24,7 @@ block content
                         td= moment(note.created).format('MMMM DD YYYY, HH:mm:ss')
 
     if(checkPermission('eventadmin'))
-        a(class='btn btn-default' href='/notes/#{note.id}/edit')
+        a(class='btn btn-default' href='/notes/' + note.id + '/edit')
             span(class='glyphicon glyphicon-edit')
             |  Edit
 

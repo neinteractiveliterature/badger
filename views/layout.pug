@@ -86,7 +86,7 @@ html(lang="en")
                             - if (visibleEvents.length > 1)
                                 +nav_item_dropdown('#')(label= session.currentEvent.name)
                                     for event in visibleEvents
-                                        li: a( href='/events/#{event.id}/select') #{event.name}
+                                        li: a( href='/events/' + event.id + '/select') #{event.name}
                             - else
                                 +nav_item('#') #{session.currentEvent.name}
                         - if (checkPermission('eventadmin'))

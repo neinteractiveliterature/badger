@@ -41,14 +41,17 @@ $(function(){
 
     });
 
-    $('.clickable-row').on('click', function(e){
+  } else {
+    $('#pagerControls').hide();
+  }
+
+
+  $('.clickable-row').on('click', function(e){
+    console.log('clicked');
         e.preventDefault();
         var object = $(this).attr('data-click-object');
         var id = $(this).attr('data-click-id');
         window.location.href='/'+ object + '/' + id;
   });
-
-  } else {
-    $('#pagerControls').hide();
-  }
+  console.log('loaded')
 });

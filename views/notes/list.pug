@@ -16,7 +16,7 @@ block content
                     th Contents
             tbody
                 for note in notes
-                    tr(class='clickable-row', data-click-object='notes' data-click-id='#{note.id}')
+                    tr(class='clickable-row', data-click-object='notes' data-click-id=note.id)
                         td= attendees[note.attendee_id].name
                         td= note.cleared?'Yes':'No'
                         td= moment(note.created).format('MMMM DD YYYY, HH:mm:ss')
