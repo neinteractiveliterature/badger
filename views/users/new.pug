@@ -11,5 +11,5 @@ block content
             +panel-default('Create User')
                 form(class="form" data-toggle="validator" method="POST" action="/users")
                     input(type="hidden", name='_csrf',value=csrfToken)
-                    include ./_form.jade
+                    include ./_form.pug
 

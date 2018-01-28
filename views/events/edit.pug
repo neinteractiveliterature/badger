@@ -15,8 +15,8 @@ block content
                     input(type="hidden", name="_method",  value="PUT")
                     input(type="hidden", name='_csrf',value=csrfToken)
                     input(type="hidden", name='event[id]',value=event.id)
-                    include ./_form.jade
-                include ./_badgeField.jade
+                    include ./_form.pug
+                include ./_badgeField.pug
 
 
 append scripts

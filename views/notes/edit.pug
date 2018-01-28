@@ -14,4 +14,4 @@ block content
                 form(class='form' role='form' data-toggle='validator' method='POST' action='/notes/' + note.id)
                     input(type='hidden', name='_method',  value='PUT')
                     input(type='hidden', name='note[id]',value=note.id)
-                    include ./_form.jade
+                    include ./_form.pug
