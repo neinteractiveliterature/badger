@@ -61,7 +61,12 @@ block content
                                         - values.push("<strong>"+property + "</strong>: " + value)
                                     | !{values}
     if(checkPermission({event:event.id, type:'admin'}))
-        a(class="btn btn-default" href='/events/' + event.id + '/edit')
-            span(class="glyphicon glyphicon-edit")
-            |  Edit
+        div(class="btn-toolbar")
+            a(class="btn btn-default" href='/events/' + event.id + '/edit')
+                span(class="glyphicon glyphicon-edit")
+                |  Edit
+
+            a(class="btn btn-default" href='/events/' + event.id + '/clone')
+                span(class="glyphicon glyphicon-duplicate")
+                |  Clone Event
 

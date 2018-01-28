@@ -92,6 +92,35 @@ function showNew(req, res, next){
     });
 }
 
+function showClone(req, res, next){
+    var event_id = req.params.id;
+
+    async.parallel({
+        event: function(cb){
+            req.models.event.get(event_id, cb);
+        },
+        importers: function(cb){
+            req.models.importer.list(cb);
+        }
+    }, function(err, result){
+        if (err){ return next(err); }
+        if (result.event.description){
+            result.event.description += '\n\n';
+        }
+
+        res.locals.event = {
+            name: 'Copy of ' + result.event.name,
+            description: result.event.description + 'Cloned from ' + result.event.name,
+            importer_id: result.event.importer_id,
+            badge: result.event.badge
+        };
+        res.locals.importers = result.importers
+        res.locals.csrfToken = req.csrfToken();
+        res.render('events/new');
+    });
+}
+
+
 function showEdit(req, res, next){
     var event_id = req.params.id;
     async.parallel({
@@ -128,14 +157,13 @@ function create(req, res, next){
         importer_id: event.importer_id,
         badge: []
     }
+
     buildBadge(event.badge, function(err, badge){
         if (err){
             req.flash('error', err);
             return res.redirect('/events/new');
         }
         doc.badge = badge;
-
-        return res.redirect('/events/new');
 
         req.models.event.create(doc, function(err, newEventId){
             if (err){
@@ -271,12 +299,16 @@ router.use(badgerHelper.setSection('admin'));
 router.get('/', permission('admin'), list);
 
 router.get('/new', permission('admin'), csurf(), showNew);
+
 router.post('/', permission('admin'), csurf(), create);
 
 router.get('/:id', accessPermission, show);
 router.get('/:id/select', selectEvent);
 router.get('/:id/edit', adminPermission, csurf(), showEdit);
+router.get('/:id/clone', permission('admin'), csurf(), showClone);
+
 router.put('/:id', adminPermission, csurf(), update);
+
 
 //router.delete('/:id', permission('admin'), deleteEvent);
 
