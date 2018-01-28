@@ -5,6 +5,9 @@ block content
     a(class='btn btn-success' href='/attendees/new')
         span(class="glyphicon glyphicon-plus")
         |  New Attendee
+    .table-sorted-loading.alert.alert-info.top-buffer
+        span(class='glyphicon glyphicon-refresh glyphicon-refresh-animate')
+        |  Loading Data, please wait
     .table-responsive
         table(class='table table-condensed table-striped table-sorted table-hover')
             thead
@@ -41,7 +44,6 @@ block content
                     for field in session.currentEvent.displayFields
                         th(class="property-name")= field
                 +pager
-
 
 append scripts
     script(src='/javascripts/data-table.js')

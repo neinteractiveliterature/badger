@@ -49,7 +49,9 @@ block content
         .row
             .col-sm-12
                 for note in attendee.notes
-                    .alert.alert(role="alert",class="alert-info fade in note "+ note.cleared?'note-cleared':'', id='note-' + note.id)
+                    - var noteClasses = ['alert', 'alert-info', 'fade', 'in', 'note'];
+                    - if (note.cleared) { noteClasses.push('note-cleared'); }
+                    div(class=noteClasses, id='note-' + note.id)
                         -if(!note.cleared)
                             p(id="note-' + note.id + '-contents" class="editable-note")= note.contents
                         -else
@@ -109,7 +111,7 @@ block content
                 h3.panel-title Audit History
                     | &nbsp;
                     span.caret
-            table#auditHistoryTable(class='table table-striped table-condensed table-sorted')
+            table#auditHistoryTable(class='table table-striped table-condensed table-sorted' style='display:none')
                 thead
                     tr
                         th ID
