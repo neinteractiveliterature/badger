@@ -22,9 +22,9 @@ function die(err){
 
 program
   .version('0.0.1')
-  .usage('[options] <event> <importer> <file>')
+  .usage('[options] <event name> <file>')
   .option('-e, --events', 'List Events')
-  .option('-i, --importers', 'List Importers')
+  .option('-c, --clone [event name]', 'Specify an event to clone data from')
   .option('-d, --dryrun', 'Dry run only')
   .option('-v, --verbose', 'verbose messages')
   .parse(process.argv);
@@ -32,37 +32,52 @@ program
 
 if (program.events){
     showEvents(die);
-} else if (program.importers){
-    showImporters(die);
 } else {
     var event_name = program.args[0];
-    var importer_name = program.args[1];
-    var filename = program.args[2];
-    if (!event_name || !importer_name || !filename) {
-        program.help()
+    var filename = program.args[1];
+    if (!event_name || !filename) {
+        program.help();
     }
 
     async.waterfall([
         function(cb){
             async.parallel({
-                importer: function(cb){
-                    models.importer.getByName(importer_name, cb);
-                },
                 event: function(cb){
                     models.event.getByName(event_name, cb);
+                },
+                clone: function(cb){
+                    if (! program.clone){
+                        return process.nextTick(cb);
+                    }
+                    models.event.getByName(program.clone, cb);
                 }
             }, cb);
         },
 
         function(dbData, cb){
-            if (! dbData.importer){
-                console.log('importer ' + importer_name + ' not found');
-                process.exit(0);
-            }
             if (! dbData.event){
                 console.log('event ' + event_name + ' not found');
                 process.exit(0);
             }
+            program.event_id = dbData.event.id;
+
+            if (dbData.clone){
+                program.clone = dbData.clone.id;
+            }
+
+            models.importer.get(dbData.event.importer_id, function(err, importer){
+                if (err) { return cb(err); }
+                if (!importer){
+                    console.log('importer not found');
+                    process.exit(0);
+                }
+
+                dbData.importer = importer;
+                cb(null, dbData);
+            });
+        },
+
+        function(dbData, cb){
 
             if (program.verbose){
                 console.log(JSON.stringify(dbData, null, 2));
@@ -77,7 +92,6 @@ if (program.events){
             csv.parse(doc, {columns: true}, function(err, data){
                 if(err){ die(err); }
                 async.eachLimit(data, 1, function(row, cb){
-                    program.event_id = dbData.event.id;
                     importer(dbData.importer.rules, row, program, cb);
                 }, function(err){
                     if (err) { return cb(err); }
