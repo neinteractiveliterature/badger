@@ -27,7 +27,7 @@ exports.getByName = function(name, cb){
 };
 
 exports.list = function(cb){
-    var query = 'select * from events';
+    var query = 'select * from events order by created desc';
     database.query(query, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);

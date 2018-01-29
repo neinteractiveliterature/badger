@@ -32,7 +32,7 @@ exports.getByUsername = function(text, cb){
 };
 
 exports.list = function(cb){
-    var query = 'select * from users';
+    var query = 'select * from users order by name';
     database.query(query, function(err, result){
         if (err) { return cb(err); }
         return getRelated(result.rows, cb);

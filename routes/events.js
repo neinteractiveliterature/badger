@@ -8,6 +8,8 @@ var permission = require('../lib/permission');
 var badgerHelper = require('../lib/badger-helper');
 var csurf = require('csurf');
 var validator = require('validator');
+var csv = require('csv');
+var moment = require('moment');
 
 function selectEvent(req, res, next){
     var event_id = req.params.id;
@@ -107,6 +109,11 @@ function showClone(req, res, next){
         if (result.event.description){
             result.event.description += '\n\n';
         }
+        result.event.badge.forEach(function(item){
+            if (_.has(item, 'dataField') && _.isArray(item.dataField)){
+                item.dataField = item.dataField.join(', ');
+            }
+        });
 
         res.locals.event = {
             name: 'Copy of ' + result.event.name,
@@ -139,6 +146,11 @@ function showEdit(req, res, next){
         }
     }, function(err, result){
         if (err){ return next(err); }
+        result.event.badge.forEach(function(item){
+            if (_.has(item, 'dataField') && _.isArray(item.dataField)){
+                item.dataField = item.dataField.join(', ');
+            }
+        });
         res.locals.event = result.event;
         res.locals.importers = result.importers
         res.locals.csrfToken = req.csrfToken();
@@ -282,6 +294,46 @@ function deleteEvent(req, res, next){
     });
 }
 
+function history(req, res, next){
+    var event_id = req.params.id;
+    async.parallel({
+        event: function(cb){
+            req.models.event.get(event_id, cb);
+        },
+        users: function(cb){
+            req.models.user.list(cb);
+        },
+        attendees: function(cb){
+            req.models.attendee.listByEvent(event_id, cb);
+        },
+        audits: function(cb){
+            req.models.audit.listAttendeeAuditsByEvent(event_id, cb);
+        }
+    }, function(err, result){
+        if (err) { return next(err); }
+        var attendees = _.indexBy(result.attendees, 'id');
+        var users = _.indexBy(result.users, 'id');
+        var event = result.event;
+        var data = []
+        data.push(['Audit ID', 'Timestamp', 'Attendee', 'Action', 'User']);
+        result.audits.forEach(function(audit){
+            if (audit.action === 'update'){ return; }
+            data.push([
+                audit.id,
+                moment(audit.created).format('YYYY-MM-DD HH:mm:ss'),
+                attendees[audit.object_id].name,
+                audit.action,
+                users[audit.user_id].name
+            ]);
+        });
+        csv.stringify(data, function(err, output){
+            if (err) { return next(err); }
+            res.attachment(event.name + ' Badger Event History.csv');
+            res.end(output);
+        });
+    });
+}
+
 function adminPermission(req, res, next){
     permission({event: req.params.id, type:"admin"})(req, res, next);
 }
@@ -304,6 +356,7 @@ router.post('/', permission('admin'), csurf(), create);
 
 router.get('/:id', accessPermission, show);
 router.get('/:id/select', selectEvent);
+router.get('/:id/history', adminPermission, history);
 router.get('/:id/edit', adminPermission, csurf(), showEdit);
 router.get('/:id/clone', permission('admin'), csurf(), showClone);
 
