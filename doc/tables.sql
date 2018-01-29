@@ -128,6 +128,7 @@ create table devices
     id serial,
     name varchar(250),
     active boolean default false,
+    enabled boolean default false,
     CONSTRAINT devices_name_ukey UNIQUE (name),
     primary key (id)
 );

@@ -48,8 +48,8 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into devices (name, active) values ($1, $2) returning id';
-    var dataArr = [data.name, data.active];
+    var query = 'insert into devices (name, active, enabled) values ($1, $2, $3) returning id';
+    var dataArr = [data.name, data.active, data.enabled];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows[0].id);
@@ -62,8 +62,8 @@ exports.update =  function(id, data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'update devices set name = $2, active = $3 where id = $1';
-    var dataArr = [id, data.name, data.active];
+    var query = 'update devices set name = $2, active = $3, enabled = $4 where id = $1';
+    var dataArr = [id, data.name, data.active, data.enabled];
     database.query(query, dataArr, cb);
 };
 

@@ -7,6 +7,7 @@ block content
             thead
                 tr
                     th Name
+                    th Enabled
                     th Active
                     th Status
                     th Type
@@ -19,15 +20,22 @@ block content
                         - rowClass += ' success'
                     tr(class=rowClass)
                         td= device.name
+                        td(class="printer-enabled")= device.enabled?'Yes':'No'
                         td(class="printer-active")= device.active?'Yes':'No'
                         td= device.status.toLowerCase() + ' ( ' + device.options['printer-state-reasons'].replace(/-(report|warning|error)$/, '') + ' )'
                         td= device.options['printer-make-and-model']
                         td(class="job-count")= device.jobs ? device.jobs.length : 0
                         td
-                            -if (device.jobs && device.jobs.length)
-                                button(class='btn btn-xs btn-default clear-jobs-button' type='button' data-device=device.name ) Clear Jobs
-                            -if (checkPermission('eventadmin'))
-                                button(class='btn btn-xs btn-default activate-printer-button' type='button' data-device=device.name)= device.active ? 'Deactivate' : 'Activate'
+                            .btn-toolbar
+                                -if (device.jobs && device.jobs.length)
+                                    button(class='btn btn-xs btn-default clear-jobs-button' type='button' data-device=device.name ) Clear Jobs
+
+                                -if (checkPermission('admin'))
+                                    button(class='btn btn-xs btn-default enable-printer-button' type='button' data-device=device.name)= device.enabled ? 'Disable' : 'Enable'
+
+                                button(class='btn btn-xs btn-default activate-printer-button' type='button' data-device=device.name style=device.enabled?"":"display:none")= device.active ? 'Deactivate' : 'Activate'
+
+
 
 append scripts
     script(src='/javascripts/devices.js')
