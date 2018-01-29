@@ -92,11 +92,15 @@ html(lang="en")
                         - if (checkPermission('eventadmin'))
                             +nav_item_dropdown('#', siteSection==='admin'?"active":null)(label='Admin')
                                 +nav_item("/notes") Notes
+                                +nav_item("/devices") Devices
+                                +nav_item("/users") Users
+
                                 - if (checkPermission('admin'))
-                                    +nav_item("/devices") Devices
-                                    +nav_item("/users") Users
                                     +nav_item("/events") Events
                                     +nav_item("/importers") Importers
+                        - else
+                            +nav_item("/devices") Devices
+
 
 
                     ul.nav.navbar-nav(class='navbar-right')

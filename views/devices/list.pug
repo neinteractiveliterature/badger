@@ -26,7 +26,7 @@ block content
                         td
                             -if (device.jobs && device.jobs.length)
                                 button(class='btn btn-xs btn-default clear-jobs-button' type='button' data-device=device.name ) Clear Jobs
-                            -if (checkPermission('admin'))
+                            -if (checkPermission('eventadmin'))
                                 button(class='btn btn-xs btn-default activate-printer-button' type='button' data-device=device.name)= device.active ? 'Deactivate' : 'Activate'
 
 append scripts
