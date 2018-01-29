@@ -315,13 +315,13 @@ function history(req, res, next){
         var users = _.indexBy(result.users, 'id');
         var event = result.event;
         var data = []
-        data.push(['Audit ID', 'Timestamp', 'Attendee', 'Action', 'User']);
+        data.push(['Audit ID', 'Timestamp', 'Attendee', 'Attendee ID', 'Action', 'User']);
         result.audits.forEach(function(audit){
-            if (audit.action === 'update'){ return; }
             data.push([
                 audit.id,
                 moment(audit.created).format('YYYY-MM-DD HH:mm:ss'),
                 attendees[audit.object_id].name,
+                audit.object_id,
                 audit.action,
                 users[audit.user_id].name
             ]);
