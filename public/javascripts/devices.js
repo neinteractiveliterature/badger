@@ -39,12 +39,10 @@ function toggleActive(e){
         data:{_method: 'PUT'},
         success: function(result) {
             if (activate){
-                $printerRow.addClass('success');
-                $activeField.text('Yes');
+                $activeField.html('<span class="label label-success">active</span>');
                 $this.text('Deactivate');
             } else {
-                $printerRow.removeClass('success');
-                $activeField.text('No');
+                $activeField.html('');
                 $this.text('Activate');
             }
         }
@@ -73,14 +71,14 @@ function toggleEnabled(e){
         data:{_method: 'PUT'},
         success: function(result) {
             if (activate){
-                $enabledField.text('Yes');
+                $enabledField.html('<span class="label label-primary">enabled</span>');
                 $this.text('Disable');
                 $activeButton.show();
             } else {
-                $printerRow.removeClass('success');
-                $enabledField.text('No');
-                $activeField.text('No');
+                $enabledField.html('');
+                $activeField.html('');
                 $activeButton.hide();
+                $activeButton.text('Activate');
                 $this.text('Enable');
             }
         }

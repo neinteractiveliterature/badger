@@ -3,13 +3,12 @@ extends ../layout
 block content
     h2 Devices
     .table-responsive
-        table(class='table table-striped table-condensed table-hover')
+        table(class='table table-striped device-table table-hover')
             thead
                 tr
                     th Name
-                    th Enabled
-                    th Active
-                    th Status
+                    th(colspan="2") Badger Status
+                    th Printer Status
                     th Type
                     th Jobs
                     th Actions
@@ -17,12 +16,18 @@ block content
                 for device in devices
                     if (device.enabled || checkPermission('eventadmin'))
                         - var rowClass = 'clickable-row'
-                        - if (device.active)
-                            - rowClass += ' success'
                         tr(class=rowClass)
                             td= device.name
-                            td(class="printer-enabled")= device.enabled?'Yes':'No'
-                            td(class="printer-active")= device.active?'Yes':'No'
+                            if (checkPermission('eventadmin'))
+                                td(class="printer-enabled")
+                                    if (device.enabled)
+                                        <span class="printer-enabled label label-primary">enabled</span>
+                            else
+                                td
+
+                            td(class="printer-active")
+                                if (device.active)
+                                    <span class="label label-success">active</span>
                             td= device.status.toLowerCase() + ' ( ' + device.options['printer-state-reasons'].replace(/-(report|warning|error)$/, '') + ' )'
                             td= device.options['printer-make-and-model']
                             td(class="job-count")= device.jobs ? device.jobs.length : 0
