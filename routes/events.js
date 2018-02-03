@@ -79,7 +79,8 @@ function showNew(req, res, next){
         name: null,
         importer_id: null,
         badge: null,
-        desciption:null
+        description:null,
+        margin:0.15
     };
 
     res.locals.csrfToken = req.csrfToken();
@@ -167,7 +168,8 @@ function create(req, res, next){
         name: event.name,
         description: event.description,
         importer_id: event.importer_id,
-        badge: []
+        badge: [],
+        margin: 0.15
     }
 
     buildBadge(event.badge, function(err, badge){
@@ -202,7 +204,8 @@ function update(req, res, next){
         name: event.name,
         description: event.description,
         importer_id: event.importer_id,
-        badge: []
+        badge: [],
+        margin: event.margin
     }
     buildBadge(event.badge, function(err, badge){
         if (err){

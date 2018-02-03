@@ -88,7 +88,7 @@ function printBadge(req, res, next){
             },cb);
         },
         function(data, cb){
-            badge.print(data.event.badge, data.attendee, function(err){
+            badge.print(data.event.badge, data.event.margin, data.attendee, function(err){
                 cb(err, data.attendee);
             });
         },
@@ -114,7 +114,7 @@ function showBadge(req, res, next){
         }
     }, function(err, data){
         if (err) { return next(err); }
-        badge.print(data.event.badge, data.attendee, {display:true}, function(err, badge){
+        badge.print(data.event.badge, data.event.margin, data.attendee, {display:true}, function(err, badge){
             if (err){ return next(err); }
             if (req.query.download){
                 res.attachment(attendee.name + '.pdf');
@@ -187,7 +187,7 @@ function checkIn(req, res, next){
                     function(cb){
                         req.models.event.get(req.session.currentEvent.id, function(err, event){
                             if (err) { return cb(err); }
-                            badge.print(event.badge, attendeeData, cb);
+                            badge.print(event.badge, event.margin, attendeeData, cb);
                         });
                     },
                     function(cb){

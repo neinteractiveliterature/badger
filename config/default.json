@@ -20,8 +20,7 @@
         "sizes": {
             "cr80": {
                 "height": 2.125,
-                "width": 3.375,
-                "margin": 0.15
+                "width": 3.375
             }
         }
     }

@@ -16,6 +16,7 @@ CREATE TABLE events
     description text,
     badge jsonb,
     importer_id int,
+    margin float,
     created timestamp with time zone NOT NULL DEFAULT now(),
     primary key (id),
     CONSTRAINT event_name_ukey UNIQUE (name),

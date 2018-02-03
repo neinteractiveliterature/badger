@@ -16,6 +16,15 @@
         = event.description
 
 .form-group
+    label(for="event_margin") Card Margin
+    .input-group
+        input.form-control(type="number",placeholder="Margin",name="event[margin]",value=event.margin,id='event_margin',required,step="0.01")
+        .input-group-addon
+            | Inches
+    span(class="glyphicon form-control-feedback" aria-hidden="true")
+    div(class="help-block with-errors")
+
+.form-group
     label(for="event_badge") Badge Layout
     |  (Drag to reorder fields)
     ol.list-unstyled(id='badgeform')

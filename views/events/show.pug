@@ -29,6 +29,13 @@ block content
                         td= attendees.checkedIn
                         td= attendees.badged
 
+    if (event.margin)
+        p
+            strong Card Margin:
+            = " "
+            = event.margin
+            = " inches"
+
     if (event.badge)
         h3 Badge Layout
         div(class="row")
