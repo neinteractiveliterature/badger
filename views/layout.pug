@@ -86,15 +86,21 @@ html(lang="en")
                             - if (visibleEvents.length > 1)
                                 +nav_item_dropdown('#')(label= session.currentEvent.name)
                                     for event in visibleEvents
-                                        li: a( href='/events/#{event.id}/select') #{event.name}
+                                        li: a( href='/events/' + event.id + '/select') #{event.name}
                             - else
                                 +nav_item('#') #{session.currentEvent.name}
-
-                        - if (checkPermission('admin'))
+                        - if (checkPermission('eventadmin'))
                             +nav_item_dropdown('#', siteSection==='admin'?"active":null)(label='Admin')
+                                +nav_item("/notes") Notes
+                                +nav_item("/devices") Devices
                                 +nav_item("/users") Users
-                                +nav_item("/events") Events
-                                +nav_item("/importers") Importers
+
+                                - if (checkPermission('admin'))
+                                    +nav_item("/events") Events
+                                    +nav_item("/importers") Importers
+                        - else
+                            +nav_item("/devices") Devices
+
 
 
                     ul.nav.navbar-nav(class='navbar-right')

@@ -58,6 +58,16 @@ exports.listByAction = function(action, id, cb){
     });
 };
 
+exports.listAttendeeAuditsByEvent = function(eventId, cb){
+    var query = 'select a.id, a.user_id, a.action, a.object_id, a.data, a.created from audits a left join attendees on a.object_id = attendees.id ';
+    query +=    'where a.object_type = \'attendee\' and attendees.event_id = $1 order by a.created';
+    database.query(query, [eventId], function(err, result){
+        if (err) { return cb(err); }
+        return cb(null, result.rows);
+    });
+};
+
+
 exports.create = function(data, cb){
     if (! validate(data)){
         return process.nextTick(function(){

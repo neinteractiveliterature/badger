@@ -1,0 +1,45 @@
+extends ../layout
+
+block content
+    h2 Devices
+    .table-responsive
+        table(class='table table-striped device-table table-hover')
+            thead
+                tr
+                    th Name
+                    th(colspan="2") Badger Status
+                    th Printer Status
+                    th Type
+                    th Jobs
+                    th Actions
+            tbody
+                for device in devices
+                    if (device.enabled || checkPermission('eventadmin'))
+                        - var rowClass = 'clickable-row'
+                        tr(class=rowClass)
+                            td= device.name
+                            if (checkPermission('eventadmin'))
+                                td(class="printer-enabled")
+                                    if (device.enabled)
+                                        <span class="printer-enabled label label-primary">enabled</span>
+                            else
+                                td
+
+                            td(class="printer-active")
+                                if (device.active)
+                                    <span class="label label-success">active</span>
+                            td= device.status.toLowerCase() + ' ( ' + device.options['printer-state-reasons'].replace(/-(report|warning|error)$/, '') + ' )'
+                            td= device.options['printer-make-and-model']
+                            td(class="job-count")= device.jobs ? device.jobs.length : 0
+                            td
+                                .btn-toolbar
+                                    -if (device.jobs && device.jobs.length)
+                                        button(class='btn btn-xs btn-default clear-jobs-button' type='button' data-device=device.name ) Clear Jobs
+
+                                    -if (checkPermission('admin'))
+                                        button(class='btn btn-xs btn-default enable-printer-button' type='button' data-device=device.name)= device.enabled ? 'Disable' : 'Enable'
+
+                                    button(class='btn btn-xs btn-default activate-printer-button' type='button' data-device=device.name style=device.enabled?"":"display:none")= device.active ? 'Deactivate' : 'Activate'
+
+append scripts
+    script(src='/javascripts/devices.js')

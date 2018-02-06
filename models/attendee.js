@@ -38,7 +38,7 @@ exports.search = function(event_id, text, cb){
 };
 
 exports.list = function(cb){
-    var query = 'select * from attendees';
+    var query = 'select * from attendees order by name';
     database.query(query, function(err, result){
         if (err) { return cb(err); }
         return getRelated(result.rows, cb);
@@ -46,7 +46,7 @@ exports.list = function(cb){
 };
 
 exports.listByEvent = function(event_id, cb){
-    var query = 'select * from attendees where event_id = $1';
+    var query = 'select * from attendees where event_id = $1 order by name';
     database.query(query, [event_id], function(err, result){
         if (err) { return cb(err); }
         return getRelated(result.rows, cb);

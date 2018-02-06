@@ -1,0 +1,151 @@
+extends ../layout
+
+block content
+    ol(class="breadcrumb")
+        li
+            a(href=from==='search'?'/':'/attendees')= from==='search'?'Search':'Attendees'
+        li(class="active")= attendee.name
+
+
+    h2=attendee.name
+    div(class="alert alert-info",id="alert-messages")
+
+    .row
+        .col-sm-12
+            .table-responsive
+                table(class='table table-striped table-condensed')
+                    thead
+                        tr
+                            th Name
+                            th Email
+                            th Type
+                            th Registered
+                            th Checked In
+                            th Badged
+                            for field in session.currentEvent.displayFields
+                                th(class="property-name")= field
+                    tbody
+                        tr
+                            td
+                                div(id='attendee-' + attendee.id + '-name' class='editable editable-text')= attendee.name
+                            td
+                                div(id='attendee-' + attendee.id + '-email' class='editable editable-text')= attendee.email
+                            td
+                                div(id='attendee-' + attendee.id + '-type' class='editable editable-type')= attendee.type
+                            td(id='attendee-' + attendee.id + '-registered' class='registered')= attendee.registered?'Yes':'No'
+                            td(id='attendee-' + attendee.id + '-checked-in' class='checked-in')= attendee.checked_in?'Yes':'No'
+                            td(id='attendee-' + attendee.id + '-badged' class='badged')= attendee.badged?'Yes':'No'
+                            for field in session.currentEvent.displayFields
+                                -if (! session.currentEvent.importer.rules.attendee[field].admin ||checkPermission('eventadmin') )
+                                    td
+                                        div(id='attendee-' + attendee.id + '-data-' + field,
+                                            class='property-name editable editable-' + (session.currentEvent.importer.rules.attendee[field].type||'text')
+                                        )= attendee.data[field]
+
+                                -else
+                                    td(id='attendee-' + attendee.id + '-data-' + field, class='property-name')= attendee.data[field]
+
+    div#notes
+        .row
+            .col-sm-12
+                for note in attendee.notes
+                    - var noteClasses = ['alert', 'alert-info', 'fade', 'in', 'note'];
+                    - if (note.cleared) { noteClasses.push('note-cleared'); }
+                    div(class=noteClasses, id='note-' + note.id)
+                        -if(!note.cleared)
+                            p(id="note-' + note.id + '-contents" class="editable-note")= note.contents
+                        -else
+                            p= note.contents
+
+                        -if (! note.cleared)
+                            div.row
+                                div.col-sm-12(id='note-action-bar')
+                                    button(class="btn btn-primary btn-sm note-clear" note-id=note.id) Clear
+                                    -if (note.cleared)
+                                        button(class="btn btn-default btn-sm note-edit" note-id=note.id) Edit
+
+    div.row
+        div.col-sm-12(id='attendee-action-bar')
+
+            span(class='registered-actions')
+                form(method="POST", action="/attendees/" + attendee.id + "/checkin?badge=true", id='check-in-and-badge-form')
+                    button#btn-checkin-badge(class='btn btn-primary btn-checkin-badge' data-id=attendee.id type="submit") <u>C</u>heck In and Badge
+
+                button#btn-checkin(class='btn btn-default' data-id=attendee.id type="button") Check <u>I</u>n
+
+                button#btn-badge(class='btn btn-default' data-id=attendee.id type="button")!= attendee.badged?'<u>B</u>adge Again':'Print <u>B</u>adge'
+
+                button#btn-unregister(class='btn btn-default' data-id=attendee.id type="button") <u>U</u>nregister
+
+
+            span(class="unregistered-actions")
+                button#btn-register(class='btn btn-primary' data-id=attendee.id type="button") <u>R</u>egister
+
+            -if( checkPermission('eventadmin'))
+                div.btn-group
+                    button(type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Advanced
+                        | &nbsp;
+                        span.caret
+                    ul.dropdown-menu
+                        li
+                            a#btn-uncheckin(data-id=attendee.id) Uncheck In
+                            a#btn-showNotes(action="show") Show All Notes
+                            a#btn-addNote(action="show") Add Note
+            -else
+                button#btn-addNote(class='btn btn-default' type="button" action="show" ) Add Note
+
+    .row
+        .col-sm-12
+            form.form-inline#addNote(class="form" method="POST" action="/notes")
+                input(type="hidden" name="note[attendee_id]" value=attendee.id)
+                input(type="hidden" name="backto" value='attendee')
+                div.form-group
+                    label(for='#note_contents' ) New Note:
+                    input.form-control#note_contents(type='text' name='note[contents]')
+                button(class='btn btn-primary btn-addNoteSave' data-id=attendee.id type="submit" action="show") Save
+                a#btn-addNoteCancel.btn.btn-link Cancel
+
+    -if (audits.length && checkPermission('eventadmin'))
+        .panel#auditHistoryPanel(class="panel-default")
+            .panel-heading#auditHistoryPanelHeading
+                h3.panel-title Audit History
+                    | &nbsp;
+                    span.caret
+            table#auditHistoryTable(class='table table-striped table-condensed table-sorted' style='display:none')
+                thead
+                    tr
+                        th ID
+                        th Timestamp
+                        th User
+                        th Action
+                        th Details
+
+                tbody
+                    for audit in audits
+                        tr
+                            td= audit.id
+                            td= moment(audit.created).format('MMMM DD YYYY, HH:mm:ss')
+                            td
+                                - if (checkPermission('admin'))
+                                    a(href='/users/' + audit.user_id)= audit.user
+                                - else
+                                    = audit.user
+                            td= audit.action
+                            td
+                                - if (_.has(audit.data, 'field'))
+                                    - if (audit.data.old && audit.data.new)
+                                        | Changed #{audit.data.field} from #{audit.data.old} to #{audit.data.new}
+                                    - else if (audit.data.old)
+                                        | Cleared #{audit.data.field} ( was #{audit.data.old} )
+                                    - else
+                                        | Set #{audit.data.field} to #{audit.data.new}
+                                - else if (_.has(audit.data, 'note'))
+                                    | Note #{audit.data.note}
+                tfoot
+                    +pager
+
+append scripts
+    script(src='/javascripts/data-table.js')
+    script(src='/javascripts/showAttendee.js')
+    script(src='/javascripts/auditHistory.js')
+

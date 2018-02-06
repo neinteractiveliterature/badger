@@ -32,7 +32,7 @@ exports.getByUsername = function(text, cb){
 };
 
 exports.list = function(cb){
-    var query = 'select * from users';
+    var query = 'select * from users order by name';
     database.query(query, function(err, result){
         if (err) { return cb(err); }
         return getRelated(result.rows, cb);
@@ -115,7 +115,7 @@ function validate(data){
     if (! validator.isLength(data.name, 2, 255)){
         return false;
     }
-    if (! validator.isLength(data.username, 3, 20)){
+    if (! validator.isLength(data.username, 3, 100)){
         return false;
     }
     return true;

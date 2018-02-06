@@ -55,6 +55,11 @@ function showEdit(req, res, next){
     } else {
         req.models.user.get(user_id, function(err, user){
             if (err) { return next(err); }
+            if (!res.locals.checkPermission('admin') && user.admin){
+                req.flash('error', 'You are not authorized to edit that user');
+                return res.redirect('/users/'+ user_id);
+            }
+
             res.locals.user = user;
             res.render('users/edit');
         });
@@ -91,10 +96,13 @@ function create(req, res, next){
 
     var doc = {
         name: user.name,
-        username: user.username,
-        admin: user.admin === 'on',
-        locked: user.locked === 'on'
+        username: user.username
     };
+
+    if (res.locals.checkPermission('admin')){
+        doc.admin = user.admin === 'on';
+        doc.locked = user.locked === 'on';
+    }
 
     auth.hash(user.password, function(err, hash){
         if (err){
@@ -146,9 +154,12 @@ function update(req, res, next){
     var doc = {
         name: user.name,
         username: user.username,
-        admin: user.admin === 'on',
-        locked: user.locked === 'on'
     };
+
+    if (res.locals.checkPermission('admin')){
+        doc.admin = user.admin === 'on';
+        doc.locked = user.locked === 'on';
+    }
 
     if (user.password) {
         if (user.password !== user.password_confirm){
@@ -180,6 +191,13 @@ function update(req, res, next){
                 req.models.user.update(id, record, cb);
             },
             function(result, cb){
+                if (! res.locals.checkPermission('admin')){
+                    for (event in user.events){
+                        if (!req.session.user.events[event].admin){
+                            delete user.events[event];
+                        }
+                    }
+                }
                 updateEvents(req, id, user.events, cb);
             }
         ], function(err){
@@ -199,29 +217,28 @@ function update(req, res, next){
 function updateEvents(req, userId, events, cb){
     async.series([
         function(cb){
-            req.models.event_user.listByUser(userId, function(err, events){
-                if (err) { return cb(err); }
-                async.each(events, function(event, cb){
-                    req.models.event_user.delete(event.event_id, userId, cb);
-                }, cb);
-            });
+            async.each(_.keys(events), function(event, cb){
+                req.models.event_user.delete(event, userId, cb);
+            }, cb);
         },
         function(cb){
             async.each(_.keys(events), function(event, cb){
+                if (! (events[event].access || events[event].admin)){
+                    return process.nextTick(cb);
+                }
                 var doc = {
                     user_id: userId,
                     event_id: event,
                     admin: _.has(events[event], 'admin') && events[event].admin === 'on'
                 }
                 req.models.event_user.create(doc, cb);
-
             }, cb);
         }
     ], cb);
 }
 
 router.use(auth.basicAuth);
-router.use(permission('admin'));
+router.use(permission('eventadmin'));
 
 router.use(badgerHelper.setSection('admin'));
 

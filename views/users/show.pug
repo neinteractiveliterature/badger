@@ -28,8 +28,8 @@ block content
                             ul
                                 for event in user.events
                                     li #{event.name}: #{event.admin?'Admin':'User'}
-    if(checkPermission('admin'))
-        a(class="btn btn-default" href='/users/#{user.id}/edit') Edit
+    -if(checkPermission('admin') || (checkPermission('eventadmin') && ! user.admin ))
+        a(class="btn btn-default" href='/users/' + user.id + '/edit') Edit
 
 
 
@@ -56,7 +56,10 @@ block content
                             td= moment(audit.created).format('MMMM DD YYYY, HH:mm:ss')
                             td= audit.object_type
                             td
-                                a(href='/#{audit.object_type}s/#{audit.object_id}')= audit.object
+                                if (audit.deleted)
+                                    = audit.object
+                                else
+                                    a(href='/' + audit.object_type + 's/' + audit.object_id)= audit.object
                             td= audit.action
                             td
                                 - if (_.has(audit.data, 'field'))

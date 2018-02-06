@@ -7,21 +7,37 @@ $('#addNote').hide();
 
 $('.editable').on('click', function(){
     disallowKeypress++;
+    $('#btn-badge').prop('disabled', true);
+    $('#btn-checkin-badge').prop('disabled', true);
 });
 
+$('.editable-note').on('click', function(){
+    disallowKeypress++;
+});
+
+$('.note-edit').on('click', function(){
+    var id = $(this).attr('note-id');
+    $('#note-'+id+'-contents').click();
+});
 
 $('.editable-text').editable('/attendees/update', {
-    placeholder: 'Click to set a new value',
-    callback: function(){
+    placeholder: '<span class="edit-placeholder">Click to set a new value</span>',
+    callback: function(value, settings){
         disallowKeypress--;
+        $('#btn-badge').prop('disabled', false);
+        $('#btn-checkin-badge').prop('disabled', false);
     }
 });
+
 $('.editable-boolean').editable('/attendees/update', {
     data   : " {'Yes':'Yes', 'No':'No' }",
     type   : 'select',
     onblur : 'submit',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
     callback: function(){
         disallowKeyPress--;
+        $('#btn-badge').prop('disabled', false);
+        $('#btn-checkin-badge').prop('disabled', false);
         showActions();
     }
 });
@@ -37,13 +53,49 @@ $('.editable-pronouns').editable(function(value, settings){
 
 }, {
     cssclass: 'edit-pronouns',
-    loadurl: '/pronouns',
+    loadurl: '/data/pronouns',
     type   : 'select',
-    submit : 'OK',
+    onblur : 'submit',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
     callback: function(){
         disallowKeypress--;
+        $('#btn-badge').prop('disabled', false);
+        $('#btn-checkin-badge').prop('disabled', false);
     }
 });
+
+$('.editable-type').editable(function(value, settings){
+    var id = $(this).attr('id');
+    if (value === 'Other'){
+        value = prompt('Please enter value')
+    }
+    $.post('/attendees/update', {id: id, value:value}, function(data){
+        $(id).text(data);
+    });
+    return (value);
+
+}, {
+    cssclass: 'edit-type',
+    loadurl: '/data/types',
+    type   : 'select',
+    onblur : 'submit',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
+    callback: function(){
+        disallowKeypress--;
+        $('#btn-badge').prop('disabled', false);
+        $('#btn-checkin-badge').prop('disabled', false);
+    }
+});
+
+$('.editable-note').editable('/notes/update', {
+    placeholder: '<span class="edit-placeholder">Click to set a new value</span>',
+    callback: function(value, settings){
+        disallowKeypress--;
+    },
+    cancel: '<button class="btn btn-danger btn-xs" type="cancel" ><span class="glyphicon glyphicon-remove"></span> Cancel</button>',
+    submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span> Save</button>',
+});
+
 
 
 $('#btn-checkin').click(checkIn);
@@ -171,6 +223,15 @@ function badge(){
                 showActions();
                 showAlert('success','Printed Badge');
             }
+        },
+        error: function(jqxhr) {
+            try{
+                var data = JSON.parse(jqxhr.responseText);
+                showAlert('danger', data.err);
+            }
+            catch(e){
+                showAlert('danger', jqxhr.responseText);
+            }
         }
     });
 }
@@ -218,7 +279,8 @@ function clearNote(){
             if (data.success){
                 $('#note-'+id).addClass('note-cleared');
                 $('#note-'+id).find('.note-clear').remove();
-                if ($('#btn-showNotes').attr('action')=== 'show'){
+                $('#note-'+id).find('.note-edit').remove();
+                if ($('#btn-showNotes').attr('action') !== 'hide'){
                     $('#note-'+id).hide();
                 }
             }

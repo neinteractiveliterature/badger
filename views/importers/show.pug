@@ -9,4 +9,4 @@ block content
     pre=JSON.stringify(importer.rules, null, 2)
 
     if(checkPermission('admin'))
-        a(class="btn btn-default" href='/importers/#{importer.id}/edit') Edit
+        a(class="btn btn-default" href='/importers/' + importer.id + '/edit') Edit

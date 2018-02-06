@@ -9,7 +9,6 @@ create table importers
 
 insert into importers (name, rules) values ('intercon', '{"attendee":{"name":{"field":["FirstName"," ","LastName"],"type":"name"},"badgename":{"field":"Nickname","display":true},"type":{"field":"Status","map":{"Alumni":"Unpaid"},"display":true,"type":"type"},"email":{"field":"EMail","type":"email"},"pronouns":{"field":"PreferredCharacterGender","map":{"Male":"He/Him/His","Female":"She/Her/Hers"},"type":"pronouns","display":true}},"notes":[{"field":"IsGM","map":{"0":"","1":"Is a GM, gets a patch"}},{"field":"ShirtOrder"}]}');
 
-
 CREATE TABLE events
 (
     id serial,
@@ -17,6 +16,7 @@ CREATE TABLE events
     description text,
     badge jsonb,
     importer_id int,
+    margin float,
     created timestamp with time zone NOT NULL DEFAULT now(),
     primary key (id),
     CONSTRAINT event_name_ukey UNIQUE (name),
@@ -29,7 +29,7 @@ CREATE TABLE users
 (
     id serial,
     name character varying(120),
-    username character varying(20),
+    username character varying(100),
     password character varying(200),
     admin boolean default false,
     current_event_id int,
@@ -89,7 +89,7 @@ create table notes
     contents text,
     cleared boolean default false,
     created timestamp with time zone NOT NULL DEFAULT now(),
-    primary key (id);
+    primary key (id),
     CONSTRAINT "node_attendee_id_fkey" FOREIGN KEY ("attendee_id")
         REFERENCES attendees ("id") MATCH SIMPLE
         ON UPDATE NO ACTION ON DELETE CASCADE
@@ -123,3 +123,13 @@ insert into pronouns (values, freeform) values ('He/Him/His', false);
 insert into pronouns (values, freeform) values ('They/Them/Theirs', false);
 insert into pronouns (values, freeform) values ('No pronouns, use my name', false);
 insert into pronouns (values, freeform) values ('Other', true);
+
+create table devices
+(
+    id serial,
+    name varchar(250),
+    active boolean default false,
+    enabled boolean default false,
+    CONSTRAINT devices_name_ukey UNIQUE (name),
+    primary key (id)
+);

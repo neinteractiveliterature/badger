@@ -11,7 +11,9 @@ $(function(){
 
         // widget code contained in the jquery.tablesorter.widgets.js file
         // use the zebra stripe widget if you plan on hiding any rows (filter widget)
-        widgets : [ "uitheme", "filter", "zebra" ],
+        widgets : [ "uitheme", "filter" ],
+        //widgets : [ "uitheme", "filter", "zebra" ],
+
 
         widgetOptions : {
           // using the default zebra striping class name, so it actually isn't included in the theme variable above
@@ -41,14 +43,19 @@ $(function(){
 
     });
 
-    $('.clickable-row').on('click', function(e){
+  } else {
+    $('#pagerControls').hide();
+  }
+
+
+  $('.clickable-row').on('click', function(e){
+    console.log('clicked');
         e.preventDefault();
         var object = $(this).attr('data-click-object');
         var id = $(this).attr('data-click-id');
         window.location.href='/'+ object + '/' + id;
   });
-
-  } else {
-    $('#pagerControls').hide();
-  }
+  $(".table-sorted").show();
+  $(".table-sorted-loading").hide();
+  console.log('loaded')
 });

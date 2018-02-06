@@ -4,7 +4,7 @@
     span(class="glyphicon form-control-feedback" aria-hidden="true")
     div(class="help-block with-errors")
 
-if (checkPermission('admin'))
+if (checkPermission('eventadmin'))
     .form-group(class='has-feedback')
         label(for="user_username" class="control-label") Username
         input.form-control(type="text",placeholder="Username",name="user[username]",value=user.username,id='user_username',required)
@@ -20,19 +20,20 @@ if (checkPermission('admin'))
         .form-group.col-sm-6.has-feedback
             input.form-control(type="password",name="user[password_confirm]", id='user_password_confirm',data-match="#user_password",placeholder='Confirm',required=!user.id)
             div(class="help-block with-errors")
-if (checkPermission('admin'))
+if (checkPermission('eventadmin'))
     .form-group
         label( class="control-label") Permissions
-        .form-group
-            .checkbox
-                label
-                    input(type="checkbox" checked=user.admin name="user[admin]")
-                    |  Global Administrator
-         .form-group
-            .checkbox
-                label
-                    input(type="checkbox" checked=user.locked name="user[locked]")
-                    |  Account Locked
+        - if (checkPermission('admin'))
+            .form-group
+                .checkbox
+                    label
+                        input(type="checkbox" checked=user.admin name="user[admin]")
+                        |  Global Administrator
+            .form-group
+                .checkbox
+                    label
+                        input(type="checkbox" checked=user.locked name="user[locked]")
+                        |  Account Locked
         .form-group
             table(class='table table-striped')
                 thead
@@ -42,12 +43,14 @@ if (checkPermission('admin'))
                         th Administrator
                 tbody
                     for event in visibleEvents
-                        tr
-                            td= event.name
-                            td
-                                input(type="checkbox" name="user[events][event-#{event.id}][access]" checked=user.events[event.id])
-                            td
-                                input(type="checkbox" name="user[events][event-#{event.id}][admin]" checked=user.events[event.id] && user.events[event.id].admin)
+                        if (session.user.admin || session.user.events[event.id].admin)
+                            input(type="hidden" name="user[events][event-" + event.id + "][exists]" value="true")
+                            tr
+                                td= event.name
+                                td
+                                    input(type="checkbox" name="user[events][event-" + event.id + "][access]" checked=user.events[event.id])
+                                td
+                                    input(type="checkbox" name="user[events][event-" + event.id + "][admin]" checked=user.events[event.id] && user.events[event.id].admin)
 
 .form-group
     button.btn.btn-primary(type="submit")= user.id?'Update':'Create'

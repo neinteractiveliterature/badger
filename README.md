@@ -9,8 +9,8 @@ It supports
 * Multiple Events
 * User Permissioning
     * Locked - no access
-    * Admin User - All privs
-    * Event User - Create/Edit Attendees for a event (granted per-event)
+    * Admin User - All privs for all events, create events, create/manage users
+    * Event User - Create/Edit Attendees for a event, check in attendees, create/edit/clear notes (granted per-event)
     * Event Admin - Import data, modify badge layout, view audit log for an event (granted per-event)
 * Custom attendee fields per event
 * Custom importers
@@ -27,10 +27,10 @@ It supports
 * Search/filter/sortable lists for attendees, users, events
 * Audit trail of all activity
 * User mananement via GUI
+* Printer management via GUI - Round Robin Printing on all active printers, clear queues
 
 
 ## TODO
-* edit checkin notes
 * Import attendees via website
 * Image support for badges
 * delete attendees
@@ -55,12 +55,18 @@ Importer
 ## Admin Guide
 Admins have access to all events, and all functions and can manage users
 
+### Printer setup
+* Add printer to computer
+* Make sure printer has the correct ribbon type selected. (B/W or Color)
+* adjust for landscape if needed (Set env variable BADGER_LANDSCAPE=true)
+* set printer name in env variable BADGER_PRINTER
+
 ### Instalation
 ```
 # git clone https://github.com/dkapell/badger.git badger
 # cd badger && npm install
-# psql -f doc/create_database
-# psql -U badger badger doc/tables.sql
+# sudo -u postgres psql -f doc/create_database.sql
+# psql -U badger badger -f doc/tables.sql
 # pm2 start badger.pm2.json
 # pm2 save
 ```

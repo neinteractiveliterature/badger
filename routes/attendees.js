@@ -67,7 +67,7 @@ function get(req, res, next){
                     res.render('attendees/show');
                 });
             } else {
-                res.flash('error', 'Attendee not found');
+                req.flash('error', 'Attendee not found');
                 res.redirect('/');
             }
         }
@@ -76,25 +76,45 @@ function get(req, res, next){
 
 function printBadge(req, res, next){
     var attendee_id = req.params.id;
-    req.models.attendee.get(attendee_id, function(err, attendee){
-        if (err) { return next(err); }
-        badge.print(req.session.currentEvent.badge, attendee, function(err){
-            if (err){ return next(err); }
-            attendee.badged = true;
-            req.models.attendee.update(attendee.id, attendee, function(err){
-                if (err){ return next(err); }
-                req.audit('badge', 'attendee', attendee_id);
-                res.json({success:true});
+    async.waterfall([
+        function(cb){
+            async.parallel({
+                attendee: function(cb){
+                    req.models.attendee.get(attendee_id, cb);
+                },
+                event: function(cb){
+                    req.models.event.get(req.session.currentEvent.id, cb);
+                }
+            },cb);
+        },
+        function(data, cb){
+            badge.print(data.event.badge, data.event.margin, data.attendee, function(err){
+                cb(err, data.attendee);
             });
-        });
+        },
+        function(attendee, cb){
+            attendee.badged = true;
+            req.models.attendee.update(attendee.id, attendee, cb);
+        }
+    ], function(err){
+        if (err){ return next(err); }
+        req.audit('badge', 'attendee', attendee_id);
+        res.json({success:true});
     });
 }
 
 function showBadge(req, res, next){
     var attendee_id = req.params.id;
-    req.models.attendee.get(attendee_id, function(err, attendee){
+    async.parallel({
+        attendee: function(cb){
+            req.models.attendee.get(attendee_id, cb);
+        },
+        event: function(cb){
+            req.models.event.get(req.session.currentEvent.id, cb);
+        }
+    }, function(err, data){
         if (err) { return next(err); }
-        badge.print(req.session.currentEvent.badge, attendee, {display:true}, function(err, badge){
+        badge.print(data.event.badge, data.event.margin, data.attendee, {display:true}, function(err, badge){
             if (err){ return next(err); }
             if (req.query.download){
                 res.attachment(attendee.name + '.pdf');
@@ -165,7 +185,10 @@ function checkIn(req, res, next){
             if (req.query.badge){
                 async.series([
                     function(cb){
-                        badge.print(req.session.currentEvent.badge, attendeeData, cb);
+                        req.models.event.get(req.session.currentEvent.id, function(err, event){
+                            if (err) { return cb(err); }
+                            badge.print(event.badge, event.margin, attendeeData, cb);
+                        });
                     },
                     function(cb){
                         attendeeData.badged = true;
@@ -180,7 +203,13 @@ function checkIn(req, res, next){
             }
         }
     ], function(err){
-        if (err) { return next(err); }
+        if (err) {
+            if (req.originalUrl.match(/\/api\//)){
+                return next(err);
+            }
+            req.flash('error', err);
+            return res.redirect('/attendees/' + attendee_id);
+        }
         if (req.originalUrl.match(/\/api\//)){
             res.json({success:true});
         } else {
@@ -189,7 +218,7 @@ function checkIn(req, res, next){
                 res.redirect('/');
             } else {
                 req.flash('success', 'Checked in'+ attendeeData.name);
-                res.redirect('/attendees' + attendee_id);
+                res.redirect('/attendees/' + attendee_id);
             }
         }
     });
@@ -222,6 +251,10 @@ function updateAttendee(req, res, next){
     if (field === 'data'){
         datafield = parts[3];
         fieldName = 'data.' + datafield;
+        if (req.session.currentEvent.importer.rules.attendee[datafield].type === 'admintext' &&
+           ! res.locals.checkPermission('eventadmin') ){
+            return res.status(403).send('Not Allowed');
+        }
     }
     var storeValue = value;
     if (field === 'registered' ||
@@ -333,6 +366,7 @@ function create(req, res, next){
                 req.session.attendeeData = attendee;
                 return res.redirect('/attendee/new');
             }
+            req.audit('create', 'attendee', id);
             req.flash('success', 'Attendee Created');
             if (req.query.backto){
                 res.redirect(req.query.backto);

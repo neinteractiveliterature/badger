@@ -11,8 +11,8 @@ block content
             +panel-default('Create Event')
                 form(class="form" data-toggle="validator" method="POST" action="/events")
                     input(type="hidden", name='_csrf',value=csrfToken)
-                    include ./_form.jade
-                include ./_badgeField.jade
+                    include ./_form.pug
+                include ./_badgeField.pug
 
 append scripts
     script(src='/javascripts/eventEdit.js')

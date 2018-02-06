@@ -8,6 +8,8 @@ var permission = require('../lib/permission');
 var badgerHelper = require('../lib/badger-helper');
 var csurf = require('csurf');
 var validator = require('validator');
+var csv = require('csv');
+var moment = require('moment');
 
 function selectEvent(req, res, next){
     var event_id = req.params.id;
@@ -77,7 +79,8 @@ function showNew(req, res, next){
         name: null,
         importer_id: null,
         badge: null,
-        desciption:null
+        description:null,
+        margin:0.15
     };
 
     res.locals.csrfToken = req.csrfToken();
@@ -91,6 +94,40 @@ function showNew(req, res, next){
         res.render('events/new');
     });
 }
+
+function showClone(req, res, next){
+    var event_id = req.params.id;
+
+    async.parallel({
+        event: function(cb){
+            req.models.event.get(event_id, cb);
+        },
+        importers: function(cb){
+            req.models.importer.list(cb);
+        }
+    }, function(err, result){
+        if (err){ return next(err); }
+        if (result.event.description){
+            result.event.description += '\n\n';
+        }
+        result.event.badge.forEach(function(item){
+            if (_.has(item, 'dataField') && _.isArray(item.dataField)){
+                item.dataField = item.dataField.join(', ');
+            }
+        });
+
+        res.locals.event = {
+            name: 'Copy of ' + result.event.name,
+            description: result.event.description + 'Cloned from ' + result.event.name,
+            importer_id: result.event.importer_id,
+            badge: result.event.badge
+        };
+        res.locals.importers = result.importers
+        res.locals.csrfToken = req.csrfToken();
+        res.render('events/new');
+    });
+}
+
 
 function showEdit(req, res, next){
     var event_id = req.params.id;
@@ -110,6 +147,11 @@ function showEdit(req, res, next){
         }
     }, function(err, result){
         if (err){ return next(err); }
+        result.event.badge.forEach(function(item){
+            if (_.has(item, 'dataField') && _.isArray(item.dataField)){
+                item.dataField = item.dataField.join(', ');
+            }
+        });
         res.locals.event = result.event;
         res.locals.importers = result.importers
         res.locals.csrfToken = req.csrfToken();
@@ -126,16 +168,16 @@ function create(req, res, next){
         name: event.name,
         description: event.description,
         importer_id: event.importer_id,
-        badge: []
+        badge: [],
+        margin: 0.15
     }
+
     buildBadge(event.badge, function(err, badge){
         if (err){
             req.flash('error', err);
             return res.redirect('/events/new');
         }
         doc.badge = badge;
-
-        return res.redirect('/events/new');
 
         req.models.event.create(doc, function(err, newEventId){
             if (err){
@@ -162,7 +204,8 @@ function update(req, res, next){
         name: event.name,
         description: event.description,
         importer_id: event.importer_id,
-        badge: []
+        badge: [],
+        margin: event.margin
     }
     buildBadge(event.badge, function(err, badge){
         if (err){
@@ -170,8 +213,6 @@ function update(req, res, next){
             return res.redirect('/events/' + id + '/edit');
         }
         doc.badge = badge;
-
-        return res.redirect('/events/' + id + '/edit');
 
         req.models.event.update(id, doc, function(err){
             if (err){
@@ -256,6 +297,46 @@ function deleteEvent(req, res, next){
     });
 }
 
+function history(req, res, next){
+    var event_id = req.params.id;
+    async.parallel({
+        event: function(cb){
+            req.models.event.get(event_id, cb);
+        },
+        users: function(cb){
+            req.models.user.list(cb);
+        },
+        attendees: function(cb){
+            req.models.attendee.listByEvent(event_id, cb);
+        },
+        audits: function(cb){
+            req.models.audit.listAttendeeAuditsByEvent(event_id, cb);
+        }
+    }, function(err, result){
+        if (err) { return next(err); }
+        var attendees = _.indexBy(result.attendees, 'id');
+        var users = _.indexBy(result.users, 'id');
+        var event = result.event;
+        var data = []
+        data.push(['Audit ID', 'Timestamp', 'Attendee', 'Attendee ID', 'Action', 'User']);
+        result.audits.forEach(function(audit){
+            data.push([
+                audit.id,
+                moment(audit.created).format('YYYY-MM-DD HH:mm:ss'),
+                attendees[audit.object_id].name,
+                audit.object_id,
+                audit.action,
+                users[audit.user_id].name
+            ]);
+        });
+        csv.stringify(data, function(err, output){
+            if (err) { return next(err); }
+            res.attachment(event.name + ' Badger Event History.csv');
+            res.end(output);
+        });
+    });
+}
+
 function adminPermission(req, res, next){
     permission({event: req.params.id, type:"admin"})(req, res, next);
 }
@@ -273,12 +354,17 @@ router.use(badgerHelper.setSection('admin'));
 router.get('/', permission('admin'), list);
 
 router.get('/new', permission('admin'), csurf(), showNew);
+
 router.post('/', permission('admin'), csurf(), create);
 
 router.get('/:id', accessPermission, show);
 router.get('/:id/select', selectEvent);
+router.get('/:id/history', adminPermission, history);
 router.get('/:id/edit', adminPermission, csurf(), showEdit);
+router.get('/:id/clone', permission('admin'), csurf(), showClone);
+
 router.put('/:id', adminPermission, csurf(), update);
+
 
 //router.delete('/:id', permission('admin'), deleteEvent);
 

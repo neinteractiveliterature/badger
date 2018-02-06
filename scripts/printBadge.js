@@ -45,7 +45,7 @@ if (program.events){
                 console.log(err);
                 process.exit(1);
             }
-            badge.print(event.badge, data, die);
+            badge.print(event.badge, event.margin, data, die);
         });
     });
 }

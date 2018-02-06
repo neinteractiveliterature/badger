@@ -7,6 +7,9 @@ block content
     a(class='btn btn-success' href='/events/new')
         span(class="glyphicon glyphicon-plus")
         |  New Event
+    .table-sorted-loading.alert.alert-info.top-buffer
+        span(class='glyphicon glyphicon-refresh glyphicon-refresh-animate')
+        |  Loading Data, please wait
     .table-responsive
         table(class='table table-striped table-condensed table-sorted table-hover')
             thead
@@ -17,10 +20,10 @@ block content
                     th Importer
             tbody
                 for event in events
-                    tr(class='clickable-row', data-click-object='events' data-click-id='#{event.id}')
+                    tr(class='clickable-row', data-click-object='events' data-click-id=event.id)
                         td= event.id
                         td
-                            a(href='/events/#{event.id}')= event.name
+                            a(href='/events/' + event.id)= event.name
                         td= event.description
                         td= importers[event.importer_id].name
 

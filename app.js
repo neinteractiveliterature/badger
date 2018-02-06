@@ -9,7 +9,8 @@ var session = require('express-session');
 var config = require('config');
 var _ = require('underscore');
 var moment = require('moment');
-var methodOverride = require('method-override')
+var methodOverride = require('method-override');
+var redis = require('redis');
 
 
 
@@ -23,17 +24,18 @@ var login = require('./routes/login');
 var logout = require('./routes/logout');
 var events = require('./routes/events');
 var attendees = require('./routes/attendees');
-var pronouns = require('./routes/pronouns');
+var data = require('./routes/data');
 var notes = require('./routes/notes');
 var preferences = require('./routes/preferences');
 var importers = require('./routes/importers');
+var devices = require('./routes/devices');
 
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -129,10 +131,12 @@ app.use('/events', events);
 app.use('/api/events', events);
 app.use('/attendees', attendees);
 app.use('/api/attendees', attendees);
-app.use('/pronouns', pronouns);
-app.use('/api/pronouns', pronouns);
+app.use('/data', data);
+app.use('/api/data', data);
 app.use('/notes', notes);
 app.use('/api/notes', notes);
+app.use('/devices', devices);
+app.use('/api/devices', devices);
 app.use('/importers', importers);
 app.use('/api/importers', importers);
 

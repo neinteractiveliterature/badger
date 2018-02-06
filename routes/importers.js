@@ -7,7 +7,6 @@ var auth = require('../lib/auth');
 var permission = require('../lib/permission');
 var badgerHelper = require('../lib/badger-helper');
 var csurf = require('csurf');
-var validator = require('validator');
 
 function list(req, res, next){
     req.models.importer.list(function(err, result){

@@ -5,11 +5,13 @@
   "watch"       : "true",
   "instances"   : "1",
   "env": {
-      "PORT": 5000,
+      "PORT": 3000,
       "NODE_ENV": "development"
   },
   "env_production" : {
-     "NODE_ENV": "production"
+     "NODE_ENV": "production",
+     "BADGER_SESSION_TYPE":"redis",
+     "BADGER_OUTPUT_DIR":"/tmp",
   }
 
 }

@@ -10,7 +10,7 @@ block content
         p
             strong Importer:
             =" "
-            a(href='/importers/#{event.importer_id}')= event.importer.name
+            a(href='/importers/' + event.importer_id)= event.importer.name
     p=event.description
     h3 Attendees
     div(class='row')
@@ -28,6 +28,13 @@ block content
                         td= attendees.registered
                         td= attendees.checkedIn
                         td= attendees.badged
+
+    if (event.margin)
+        p
+            strong Card Margin:
+            = " "
+            = event.margin
+            = " inches"
 
     if (event.badge)
         h3 Badge Layout
@@ -48,7 +55,7 @@ block content
                         for item in event.badge
                             tr
                                 th= item.name
-                                td= _.has(item, 'dataField')? item.dataField: item.name
+                                td= _.has(item, 'dataField') ? item.dataField : item.name
                                 td= item.x
                                 td= item.y
                                 td= item.size || 'default'
@@ -60,8 +67,17 @@ block content
                                             - continue;
                                         - values.push("<strong>"+property + "</strong>: " + value)
                                     | !{values}
-    if(checkPermission({event:event.id, type:'admin'}))
-        a(class="btn btn-default" href='/events/#{event.id}/edit')
-            span(class="glyphicon glyphicon-edit")
-            |  Edit
+    div(class="btn-toolbar")
+        a(class="btn btn-default" href='/events/' + event.id + '/history' target="_self")
+                span(class="glyphicon glyphicon-download")
+                |  Download History CSV
+
+        if(checkPermission({event:event.id, type:'admin'}))
+            a(class="btn btn-default" href='/events/' + event.id + '/edit')
+                span(class="glyphicon glyphicon-edit")
+                |  Edit
+
+            a(class="btn btn-default" href='/events/' + event.id + '/clone')
+                span(class="glyphicon glyphicon-duplicate")
+                |  Clone Event
 

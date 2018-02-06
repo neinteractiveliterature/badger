@@ -27,7 +27,7 @@ exports.getByName = function(name, cb){
 };
 
 exports.list = function(cb){
-    var query = 'select * from events';
+    var query = 'select * from events order by created desc';
     database.query(query, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows);
@@ -40,8 +40,8 @@ exports.create = function(data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'insert into events (name, description, badge) values ($1, $2, $3) returning id';
-    var dataArr = [data.name, data.description, JSON.stringify(data.badge)];
+    var query = 'insert into events (name, description, badge, margin, importer_id) values ($1, $2, $3, $4, $5) returning id';
+    var dataArr = [data.name, data.description, JSON.stringify(data.badge), data.margin, data.importer_id];
     database.query(query, dataArr, function(err, result){
         if (err) { return cb(err); }
         return cb(null, result.rows[0].id);
@@ -54,8 +54,8 @@ exports.update =  function(id, data, cb){
             cb('Invalid Data');
         });
     }
-    var query = 'update events set name = $2, description = $3, badge = $4 where id = $1';
-    var dataArr = [id, data.name, data.description, JSON.stringify(data.badge)];
+    var query = 'update events set name = $2, description = $3, badge = $4, margin=$5, importer_id = $6 where id = $1';
+    var dataArr = [id, data.name, data.description, JSON.stringify(data.badge), data.margin, data.importer_id];
     database.query(query, dataArr, cb);
 };
 

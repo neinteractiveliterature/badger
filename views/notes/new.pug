@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+    ol(class="breadcrumb")
+        li
+            a(href='/events') Notes
+        li(class="active") Create
+
+    div(class="row")
+        div(class="col-sm-8 col-sm-offset-2")
+            +panel-default('Create Note')
+                form(class="form" data-toggle="validator" method="POST" action="/notes")
+                    include ./_form.pug
+
