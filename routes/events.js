@@ -120,7 +120,8 @@ function showClone(req, res, next){
             name: 'Copy of ' + result.event.name,
             description: result.event.description + 'Cloned from ' + result.event.name,
             importer_id: result.event.importer_id,
-            badge: result.event.badge
+            badge: result.event.badge,
+            margin: result.event.margin
         };
         res.locals.importers = result.importers
         res.locals.csrfToken = req.csrfToken();
