@@ -94,9 +94,10 @@ html(lang="en")
                                 +nav_item("/notes") Notes
                                 +nav_item("/devices") Devices
                                 +nav_item("/users") Users
+                                +nav_item("/events") Events
+
 
                                 - if (checkPermission('admin'))
-                                    +nav_item("/events") Events
                                     +nav_item("/importers") Importers
                         - else
                             +nav_item("/devices") Devices

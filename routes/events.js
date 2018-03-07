@@ -352,7 +352,7 @@ router.use(permission('login'));
 router.use(badgerHelper.setSection('admin'));
 
 /* select a new event. */
-router.get('/', permission('admin'), list);
+router.get('/', permission('eventadmin'), list);
 
 router.get('/new', permission('admin'), csurf(), showNew);
 
