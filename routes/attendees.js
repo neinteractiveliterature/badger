@@ -36,8 +36,8 @@ function listRegistered(req, res, next){
         if (err) { return next(err); }
         attendees = _.filter(attendees, function(attendee){
             return  (attendee.registered);
-        })
-        res.json(attendees)
+        });
+        res.json(attendees);
     });
 }
 
@@ -117,7 +117,7 @@ function showBadge(req, res, next){
         badge.print(data.event.badge, data.event.margin, data.attendee, {display:true}, function(err, badge){
             if (err){ return next(err); }
             if (req.query.download){
-                res.attachment(attendee.name + '.pdf');
+                res.attachment(data.attendee.name + '.pdf');
             }
             res.set('Content-Type', 'application/pdf');
             res.send(badge);
@@ -172,7 +172,7 @@ function checkIn(req, res, next){
                     req.flash('success', attendeeData.name + ' is already checked in');
                     res.redirect('/attendees/' + attendee_id);
                 }
-             }
+            }
             attendee.checked_in = true;
 
             attendeeData = attendee;
@@ -362,7 +362,7 @@ function create(req, res, next){
         }
         req.models.attendee.create(doc, function(err, id){
             if (err){
-                req.flash('error', 'Error creating attendee: '+ err)
+                req.flash('error', 'Error creating attendee: '+ err);
                 req.session.attendeeData = attendee;
                 return res.redirect('/attendee/new');
             }

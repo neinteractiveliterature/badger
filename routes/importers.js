@@ -73,7 +73,7 @@ function create(req, res, next){
     var doc = {
         name: importer.name,
         rules: importer.rules,
-    }
+    };
     req.models.importer.create(doc, function(err, newImporterId){
         if (err){
             req.flash('error', 'Error creating importer: ' + err);

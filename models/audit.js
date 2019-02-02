@@ -21,7 +21,7 @@ exports.getActions = function(cb){
         if (err) { return cb(err); }
         return cb(null, result.rows);
     });
-}
+};
 
 
 exports.list = function(cb){

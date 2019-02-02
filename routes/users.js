@@ -14,10 +14,10 @@ function list(req, res, next){
         res.locals.users = users;
         res.render('users/list');
     });
-};
+}
 
 function show(req, res, next){
-    var user_id = req.params.id
+    var user_id = req.params.id;
     req.models.user.get(user_id, function(err, user){
         if (err) {return next(err); }
         res.locals.user = user;
@@ -27,7 +27,7 @@ function show(req, res, next){
             res.render('users/show');
         });
     });
-};
+}
 
 function showNew(req, res, next){
     res.locals.csrfToken = req.csrfToken();
@@ -47,7 +47,7 @@ function showNew(req, res, next){
 
 function showEdit(req, res, next){
     res.locals.csrfToken = req.csrfToken();
-    var user_id = req.params.id
+    var user_id = req.params.id;
     if (_.has(req.session, 'userData')){
         res.locals.user = req.session.userData;
         delete req.session.userData;
@@ -230,7 +230,7 @@ function updateEvents(req, userId, events, cb){
                     user_id: userId,
                     event_id: event,
                     admin: _.has(events[event], 'admin') && events[event].admin === 'on'
-                }
+                };
                 req.models.event_user.create(doc, cb);
             }, cb);
         }

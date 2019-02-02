@@ -29,7 +29,7 @@ exports.listByEvent = function(event_id, cb){
         if (err) { return cb(err); }
         return cb(null, result.rows);
     });
-}
+};
 
 exports.list = function(cb){
     var query = 'select * from notes';

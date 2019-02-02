@@ -97,7 +97,7 @@ function lookupRelated(data, cb){
                             name: e.name,
                             admin: e.admin
                         };
-                        return o
+                        return o;
                     }, {} ));
                 });
             });

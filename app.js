@@ -39,17 +39,17 @@ app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(methodOverride('_method'))
+app.use(methodOverride('_method'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride(function(req, res){
-  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    if (req.body && typeof req.body === 'object' && '_method' in req.body) {
     // look in urlencoded POST bodies and delete it
-    var method = req.body._method
-    delete req.body._method
-    return method
-  }
+        var method = req.body._method;
+        delete req.body._method;
+        return method;
+    }
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -63,14 +63,15 @@ var sessionConfig = {
 
 if (config.get('app.sessionType') === 'redis'){
     var RedisStore = require('connect-redis')(session);
+    var redisClient = null;
     if (process.env.REDISTOGO_URL) {
-      var redisToGo   = require('url').parse(process.env.REDISTOGO_URL);
-      var redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
+        var redisToGo   = require('url').parse(process.env.REDISTOGO_URL);
+        redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
 
-      redisClient.auth(redisToGo.auth.split(":")[1]);
+        redisClient.auth(redisToGo.auth.split(':')[1]);
 
     } else {
-      var redisClient = redis.createClient();
+        redisClient = redis.createClient();
     }
     sessionConfig.store = new RedisStore({ client: redisClient });
     sessionConfig.resave = true;
@@ -83,8 +84,8 @@ app.use(permission());
 app.use(auditor.middleware);
 
 app.use(function(req, res, next){
-  req.models = models;
-  next();
+    req.models = models;
+    next();
 });
 
 // Set common helpers for the view
@@ -108,7 +109,7 @@ app.use(function(req, res, next){
             res.locals.visibleEvents = events;
             return next();
         }
-        eventsMap = _.indexBy(events, 'id');
+        var eventsMap = _.indexBy(events, 'id');
 
         models.event_user.listByUser(req.session.user.id, function(err, event_users){
             if (err) { return next(err); }
@@ -120,7 +121,7 @@ app.use(function(req, res, next){
             next();
         });
     });
-})
+});
 
 app.use('/', routes);
 app.use('/login', login);
@@ -142,9 +143,9 @@ app.use('/api/importers', importers);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handlers
@@ -152,32 +153,32 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    console.log('Error: ' + err);
-    res.status(err.status || 500);
-    if (req.originalUrl.match(/\/api\//)){
-      res.json( { success:false, message: err.message, err:err });
-    } else {
-      res.render('error', {
-        message: err.message,
-        error: err
-      });
-    }
-  });
+    app.use(function(err, req, res, next) {
+        console.log('Error: ' + err);
+        res.status(err.status || 500);
+        if (req.originalUrl.match(/\/api\//)){
+            res.json( { success:false, message: err.message, err:err });
+        } else {
+            res.render('error', {
+                message: err.message,
+                error: err
+            });
+        }
+    });
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  if (req.originalUrl.match(/\/api\//)){
-    res.json( { success:false, message: err.message });
-  } else {
-    res.render('error', {
-      message: err.message,
-      error: {}
-    });
-  }
+    res.status(err.status || 500);
+    if (req.originalUrl.match(/\/api\//)){
+        res.json( { success:false, message: err.message });
+    } else {
+        res.render('error', {
+            message: err.message,
+            error: {}
+        });
+    }
 });
 
 module.exports = app;

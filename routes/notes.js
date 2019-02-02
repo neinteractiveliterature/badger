@@ -26,7 +26,7 @@ function show(req, res, next){
             req.models.attendee.get(note.attendee_id, function(err, attendee){
                 if (err) { return next(err); }
                 res.locals.note = note;
-                res.locals.attendee = attendee
+                res.locals.attendee = attendee;
                 res.render('notes/show');
             });
         }
@@ -53,10 +53,10 @@ function list(req, res, next){
 function clear(req, res, next){
     var note_id = req.params.id;
     req.models.note.get(note_id, function(err, note){
-        if (err){ return cb(next); }
+        if (err){ return next(err); }
         note.cleared = true;
         req.models.note.update(note_id, note, function(err){
-            if (err) { return cb(next); }
+            if (err) { return next(err); }
             req.audit('clear note', 'attendee', note.attendee_id, {note: note_id});
             req.audit('clear', 'note', note_id);
             if (req.originalUrl.match(/\/api\//)){
@@ -64,7 +64,7 @@ function clear(req, res, next){
             } else {
                 res.redirect('/notes/' + note_id);
             }
-        })
+        });
     });
 }
 
@@ -120,7 +120,7 @@ function showNew(req, res, next){
 }
 
 function showEdit(req, res, next){
-    var note_id = req.params.id
+    var note_id = req.params.id;
     if (_.has(req.session, 'noteData')){
         res.locals.note = req.session.noteData;
         delete req.session.noteData;

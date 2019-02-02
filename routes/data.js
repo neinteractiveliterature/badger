@@ -27,7 +27,7 @@ function listPronouns(req, res, next){
                 list[''] = 'None';
                 res.json(list);
 
-            })
+            });
         } else {
             res.json(list);
         }
@@ -46,7 +46,7 @@ function listTypes(req, res, next){
         }, {});
         list['Other'] = 'Other';
         res.json(list);
-    })
+    });
 }
 
 router.use(auth.basicAuth);

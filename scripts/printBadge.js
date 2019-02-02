@@ -14,24 +14,25 @@ function die(err){
 }
 
 program
-  .version('0.0.1')
-  .usage('[options] <eventId> <attendeeId>')
-  .option('-e, --events', 'List Events')
-  .option('-a, --attendees', 'List Attendees')
-  .parse(process.argv);
+    .version('0.0.1')
+    .usage('[options] <eventId> <attendeeId>')
+    .option('-e, --events', 'List Events')
+    .option('-a, --attendees', 'List Attendees')
+    .parse(process.argv);
 
+var event_id = null;
 
 if (program.events){
     showEvents(die);
 } else if (program.attendees){
-    var event_id = program.args[0];
+    event_id = program.args[0];
     if(! event_id){
         console.log('You must specificy an account id to list attendees');
         die();
     }
     showAttendees(event_id, die);
 } else {
-    var event_id = program.args[0];
+    event_id = program.args[0];
     var attendee_id = program.args[1];
 
     if (!event_id || ! attendee_id){

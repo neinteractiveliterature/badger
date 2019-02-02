@@ -21,13 +21,13 @@ function die(err){
 }
 
 program
-  .version('0.0.1')
-  .usage('[options] <event name> <file>')
-  .option('-e, --events', 'List Events')
-  .option('-c, --clone [event name]', 'Specify an event to clone data from')
-  .option('-d, --dryrun', 'Dry run only')
-  .option('-v, --verbose', 'verbose messages')
-  .parse(process.argv);
+    .version('0.0.1')
+    .usage('[options] <event name> <file>')
+    .option('-e, --events', 'List Events')
+    .option('-c, --clone [event name]', 'Specify an event to clone data from')
+    .option('-d, --dryrun', 'Dry run only')
+    .option('-v, --verbose', 'verbose messages')
+    .parse(process.argv);
 
 
 if (program.events){
@@ -101,7 +101,7 @@ if (program.events){
         }
     ], function(err, count){
         if (err){ die(err); }
-        console.log('done: ' + count + " imported");
+        console.log('done: ' + count + ' imported');
         process.exit(0);
     });
 }

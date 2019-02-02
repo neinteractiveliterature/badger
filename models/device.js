@@ -16,7 +16,7 @@ exports.get = function(id, cb){
 };
 
 exports.getByName = function(name, cb){
-  var query = 'select * from devices where name = $1';
+    var query = 'select * from devices where name = $1';
     database.query(query, [name], function(err, result){
         if (err) { return cb(err); }
         if (result.rows.length){

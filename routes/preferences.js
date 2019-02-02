@@ -9,7 +9,7 @@ var async = require('async');
 
 function show(req, res, next){
     res.locals.csrfToken = req.csrfToken();
-    var user_id = req.session.user.id
+    var user_id = req.session.user.id;
     if (_.has(req.session, 'userData')){
         res.locals.user = req.session.userData;
         delete req.session.userData;
@@ -62,7 +62,7 @@ function update(req, res, next){
     });
 
     function updateUser(doc ){
-         req.models.user.update(id, doc, function(err){
+        req.models.user.update(id, doc, function(err){
             if (err){
                 req.flash('error', err);
                 return res.redirect('/preferences');

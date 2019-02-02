@@ -67,7 +67,7 @@ function show(req, res, next){
                     registered: _.filter(result.attendees, function(e) { return e.registered; }).length,
                     badged: _.filter(result.attendees, function(e) { return e.badged; }).length,
                     checkedIn: _.filter(result.attendees, function(e) { return e.checked_in; }).length
-                }
+                };
                 res.render('events/show');
             });
         }
@@ -123,7 +123,7 @@ function showClone(req, res, next){
             badge: result.event.badge,
             margin: result.event.margin
         };
-        res.locals.importers = result.importers
+        res.locals.importers = result.importers;
         res.locals.csrfToken = req.csrfToken();
         res.render('events/new');
     });
@@ -154,7 +154,7 @@ function showEdit(req, res, next){
             }
         });
         res.locals.event = result.event;
-        res.locals.importers = result.importers
+        res.locals.importers = result.importers;
         res.locals.csrfToken = req.csrfToken();
         res.render('events/edit');
     });
@@ -171,7 +171,7 @@ function create(req, res, next){
         importer_id: event.importer_id,
         badge: [],
         margin: 0.15
-    }
+    };
 
     buildBadge(event.badge, function(err, badge){
         if (err){
@@ -207,7 +207,7 @@ function update(req, res, next){
         importer_id: event.importer_id,
         badge: [],
         margin: event.margin
-    }
+    };
     buildBadge(event.badge, function(err, badge){
         if (err){
             req.flash('error', err);
@@ -318,7 +318,7 @@ function history(req, res, next){
         var attendees = _.indexBy(result.attendees, 'id');
         var users = _.indexBy(result.users, 'id');
         var event = result.event;
-        var data = []
+        var data = [];
         data.push(['Audit ID', 'Timestamp', 'Attendee', 'Attendee ID', 'Action', 'User']);
         result.audits.forEach(function(audit){
             data.push([
@@ -339,11 +339,11 @@ function history(req, res, next){
 }
 
 function adminPermission(req, res, next){
-    permission({event: req.params.id, type:"admin"})(req, res, next);
+    permission({event: req.params.id, type:'admin'})(req, res, next);
 }
 
 function accessPermission(req, res, next){
-    permission({event: req.params.id, type:"access"})(req, res, next);
+    permission({event: req.params.id, type:'access'})(req, res, next);
 }
 
 

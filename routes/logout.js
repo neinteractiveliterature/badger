@@ -7,7 +7,7 @@ function logout(req, res, next){
         delete req.session.user;
     }
     req.flash('info', 'Logged Out');
-    res.redirect('/')
+    res.redirect('/');
 }
 
 
