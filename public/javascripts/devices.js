@@ -7,7 +7,7 @@ $('.enable-printer-button').on('click', toggleEnabled);
 function clearJobs(e){
     var $this = $(this);
     var printerName = $this.attr('data-device');
-    var $countfield = $this.parent().parent().find(".job-count");
+    var $countfield = $this.parent().parent().find('.job-count');
     $.ajax({
         url: '/devices/' + printerName + '/clear',
         type: 'POST',
@@ -24,8 +24,8 @@ function toggleActive(e){
     var printerName = $this.attr('data-device');
     var url = '/devices/' + printerName;
     var activate = $(this).text() === 'Activate';
-    $printerRow = $this.parent().parent().parent();
-    $activeField = $printerRow.find(".printer-active");
+    var $printerRow = $this.parent().parent().parent();
+    var $activeField = $printerRow.find('.printer-active');
 
     if (activate) {
         url += '/activate';
@@ -54,10 +54,10 @@ function toggleEnabled(e){
     var printerName = $this.attr('data-device');
     var url = '/devices/' + printerName;
     var activate = $(this).text() === 'Enable';
-    $printerRow = $this.parent().parent().parent();
-    $enabledField = $printerRow.find(".printer-enabled");
-    $activeField = $printerRow.find(".printer-active");
-    $activeButton = $printerRow.find(".activate-printer-button");
+    var $printerRow = $this.parent().parent().parent();
+    var $enabledField = $printerRow.find('.printer-enabled');
+    var $activeField = $printerRow.find('.printer-active');
+    var $activeButton = $printerRow.find('.activate-printer-button');
 
     if (activate) {
         url += '/enable';

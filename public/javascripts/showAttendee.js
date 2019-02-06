@@ -1,5 +1,5 @@
-
-disallowKeypress = 0;
+/* global showAlert */
+var disallowKeypress = 0;
 showActions();
 
 $('.note-cleared').hide();
@@ -30,12 +30,12 @@ $('.editable-text').editable('/attendees/update', {
 });
 
 $('.editable-boolean').editable('/attendees/update', {
-    data   : " {'Yes':'Yes', 'No':'No' }",
+    data   : ' {\'Yes\':\'Yes\', \'No\':\'No\' }',
     type   : 'select',
     onblur : 'submit',
     submit: '<button class="btn btn-success btn-xs" type="submit" ><span class="glyphicon glyphicon-ok"></span></button>',
     callback: function(){
-        disallowKeyPress--;
+        disallowKeypress--;
         $('#btn-badge').prop('disabled', false);
         $('#btn-checkin-badge').prop('disabled', false);
         showActions();
@@ -44,7 +44,7 @@ $('.editable-boolean').editable('/attendees/update', {
 $('.editable-pronouns').editable(function(value, settings){
     var id = $(this).attr('id');
     if (value === 'Other'){
-        value = prompt('Please enter value')
+        value = prompt('Please enter value');
     }
     $.post('/attendees/update', {id: id, value:value}, function(data){
         $(id).text(data);
@@ -67,7 +67,7 @@ $('.editable-pronouns').editable(function(value, settings){
 $('.editable-type').editable(function(value, settings){
     var id = $(this).attr('id');
     if (value === 'Other'){
-        value = prompt('Please enter value')
+        value = prompt('Please enter value');
     }
     $.post('/attendees/update', {id: id, value:value}, function(data){
         $(id).text(data);

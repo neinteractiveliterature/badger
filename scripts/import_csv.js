@@ -60,6 +60,7 @@ if (program.events){
                 process.exit(0);
             }
             program.event_id = dbData.event.id;
+            program.base_url = dbData.event.base_url;
 
             if (dbData.clone){
                 program.clone = dbData.clone.id;

@@ -35,6 +35,12 @@ block content
             = " "
             = event.margin
             = " inches"
+    if (event.base_url)
+        p
+            strong Event Base URL:
+            = " "
+            a(href=event.base_url,target='_blank')= event.base_url
+
 
     if (event.badge)
         h3 Badge Layout

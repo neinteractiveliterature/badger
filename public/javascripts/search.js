@@ -1,3 +1,4 @@
+/* global Bloodhound Handlebars */
 $().ready(function () {
     var attendees = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name', 'email'),
@@ -32,7 +33,7 @@ $().ready(function () {
         minLength:2,
         display: 'name',
         templates: {
-             suggestion: Handlebars.compile('<div>' + suggestionTemplate + '</div>')
+            suggestion: Handlebars.compile('<div>' + suggestionTemplate + '</div>')
         },
         source: attendees.ttAdapter()
     }).on('typeahead:select', function(e, item){
@@ -41,6 +42,6 @@ $().ready(function () {
         window.location.href='/attendees/' + item.id + '?from=search';
     });
 
-    setTimeout("$('.attendee-search').focus();", 0)
+    setTimeout('$(\'.attendee-search\').focus();', 0);
 
 });

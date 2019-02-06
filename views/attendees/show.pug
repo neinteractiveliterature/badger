@@ -36,7 +36,11 @@ block content
                             td(id='attendee-' + attendee.id + '-checked-in' class='checked-in')= attendee.checked_in?'Yes':'No'
                             td(id='attendee-' + attendee.id + '-badged' class='badged')= attendee.badged?'Yes':'No'
                             for field in session.currentEvent.displayFields
-                                -if (! session.currentEvent.importer.rules.attendee[field].admin ||checkPermission('eventadmin') )
+                                -if (field === 'schedule')
+                                    td
+                                        a.btn.btn-default.btn-xs(role='button' href=attendee.data[field], target='_blank') View Schedule
+
+                                -else if (! session.currentEvent.importer.rules.attendee[field].admin ||checkPermission('eventadmin') )
                                     td
                                         div(id='attendee-' + attendee.id + '-data-' + field,
                                             class='property-name editable editable-' + (session.currentEvent.importer.rules.attendee[field].type||'text')

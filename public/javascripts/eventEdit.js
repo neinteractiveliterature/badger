@@ -1,3 +1,4 @@
+/* global BootstrapDialog */
 $(function () {
     $('#badgeform').sortable({
         tolerance: 'pointer',
@@ -7,7 +8,7 @@ $(function () {
         forceHelperSize: true,
         axis: 'y',
         stop: function (event, ui) {
-            updateNames($(this))
+            updateNames($(this));
         }
 
     });
@@ -21,7 +22,7 @@ $(function () {
         var $parent = $(this).closest('li');
         BootstrapDialog.confirm({
             title: 'Remove Field',
-            message: "Are you sure you want to remove this field?",
+            message: 'Are you sure you want to remove this field?',
             callback: function(result){
                 if(result) {
                     $parent.remove();
@@ -33,13 +34,13 @@ $(function () {
 
     $('#add-field').click(function(e){
         e.preventDefault();
-        $li = $("<li>")
+        var $li = $('<li>')
             .addClass('panel')
             .addClass('panel-default')
             .addClass('form-horizontal')
             .addClass('ui-sortable-handle');
 
-        $("#emptyField").children().clone().appendTo($li);
+        $('#emptyField').children().clone().appendTo($li);
         $li.appendTo($('#badgeform'));
         updateNames($('#badgeform'));
         $('.field-remove').click(function(e){
@@ -71,10 +72,10 @@ function updateNames($list){
             if ($(this).attr('data-row')){
                 $(this).attr('data-row', idx);
             }
-            if (this.id.match(/badge\-\d+\-/)){
-                this.id = this.id.replace(/badge\-\d+\-/, 'badge-' + idx + '-');
+            if (this.id.match(/badge-\d+-/)){
+                this.id = this.id.replace(/badge-\d+-/, 'badge-' + idx + '-');
             }
-        })
+        });
 
     });
 }

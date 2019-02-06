@@ -25,6 +25,12 @@
     div(class="help-block with-errors")
 
 .form-group
+    label(for="event_base_url" class="control-label") Event Base URL
+    input.form-control(type="text",placeholder="URL",name="event[base_url]",value=event.base_url,id='event_base_url')
+    span(class="glyphicon form-control-feedback" aria-hidden="true")
+    div(class="help-block with-errors")
+
+.form-group
     label(for="event_badge") Badge Layout
     |  (Drag to reorder fields)
     ol.list-unstyled(id='badgeform')

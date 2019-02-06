@@ -80,7 +80,8 @@ function showNew(req, res, next){
         importer_id: null,
         badge: null,
         description:null,
-        margin:0.15
+        margin:0.15,
+        base_url:null
     };
 
     res.locals.csrfToken = req.csrfToken();
@@ -121,7 +122,8 @@ function showClone(req, res, next){
             description: result.event.description + 'Cloned from ' + result.event.name,
             importer_id: result.event.importer_id,
             badge: result.event.badge,
-            margin: result.event.margin
+            margin: result.event.margin,
+            base_url: result.event.base_url
         };
         res.locals.importers = result.importers;
         res.locals.csrfToken = req.csrfToken();
@@ -170,7 +172,8 @@ function create(req, res, next){
         description: event.description,
         importer_id: event.importer_id,
         badge: [],
-        margin: 0.15
+        margin: 0.15,
+        base_url: event.base_url
     };
 
     buildBadge(event.badge, function(err, badge){
@@ -206,7 +209,8 @@ function update(req, res, next){
         description: event.description,
         importer_id: event.importer_id,
         badge: [],
-        margin: event.margin
+        margin: event.margin,
+        base_url: event.base_url
     };
     buildBadge(event.badge, function(err, badge){
         if (err){

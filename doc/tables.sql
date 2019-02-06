@@ -18,6 +18,7 @@ CREATE TABLE events
     importer_id int,
     margin float,
     created timestamp with time zone NOT NULL DEFAULT now(),
+    base_url character varying(255),
     primary key (id),
     CONSTRAINT event_name_ukey UNIQUE (name),
     CONSTRAINT "event_importer_fkey" FOREIGN KEY ("importer_id")
