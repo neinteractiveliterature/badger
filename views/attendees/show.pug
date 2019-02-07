@@ -57,7 +57,7 @@ block content
                     - if (note.cleared) { noteClasses.push('note-cleared'); }
                     div(class=noteClasses, id='note-' + note.id)
                         -if(!note.cleared)
-                            p(id="note-' + note.id + '-contents" class="editable-note")= note.contents
+                            p(id="note-" + note.id + "-contents" class="editable-note")= note.contents
                         -else
                             p= note.contents
 
