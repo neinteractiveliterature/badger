@@ -66,7 +66,7 @@ function showEdit(req, res, next){
     }
 }
 
-function create(req, res, next){
+async function create(req, res, next){
     var user = req.body.user;
 
     for (var event in user.events){
@@ -103,36 +103,29 @@ function create(req, res, next){
         doc.admin = user.admin === 'on';
         doc.locked = user.locked === 'on';
     }
-
-    auth.hash(user.password, function(err, hash){
+    doc.password = await auth.hash(user.password);
+    req.models.user.create(doc, function(err, userId){
         if (err){
             req.flash('error', err);
             return res.redirect('/users/new');
         }
-        doc.password = hash;
-        req.models.user.create(doc, function(err, userId){
+        updateEvents(req, userId, user.events, function(err){
             if (err){
-                req.flash('error', err);
+                console.log(err);
+                req.flash('error', 'Error saving Event Permisions');
                 return res.redirect('/users/new');
             }
-            updateEvents(req, userId, user.events, function(err){
-                if (err){
-                    console.log(err);
-                    req.flash('error', 'Error saving Event Permisions');
-                    return res.redirect('/users/new');
-                }
 
-                req.audit('create', 'user', userId);
-                req.flash('success', 'created user '+ doc.name);
-                delete req.session.userData;
-                res.redirect('/users/' + userId);
-            });
+            req.audit('create', 'user', userId);
+            req.flash('success', 'created user '+ doc.name);
+            delete req.session.userData;
+            res.redirect('/users/' + userId);
         });
     });
 
 }
 
-function update(req, res, next){
+async function update(req, res, next){
     var id = req.params.id;
     var user = req.body.user;
 
@@ -166,15 +159,9 @@ function update(req, res, next){
             req.flash('error', 'Passwords do not match');
             return res.redirect('/users/'+id+'/edit');
         }
+        doc.password = await auth.hash(user.password);
+        updateUser();
 
-        auth.hash(user.password, function(err, hash){
-            if (err){
-                req.flash('error', err);
-                return res.redirect('/users/'+id+'/edit');
-            }
-            doc.password = hash;
-            updateUser();
-        });
     } else {
         updateUser();
     }

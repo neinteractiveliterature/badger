@@ -6,6 +6,8 @@
         "print": true,
         "outputDir": "./output",
         "dbURL": "postgres://badger:badger@localhost:5432/badger",
+        "dbSSL": false,
+        "dbPoolSize": 1,
         "sessionType": "local",
         "sessionSecret": "badger",
         "defaultEventId": 1,

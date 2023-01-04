@@ -46,6 +46,13 @@ block content
                                     option(value='' selected=attendee.pronouns==='') None
                                     option(value='Other' selected=attendee.pronouns=== 'Other') Other
                                 input.form-control(type="text", class="additional-option",placeholder="Pronouns",name="attendee[data][userpronouns]",value=attendee.data.userpronouns,id='attendee_data_user_pronouns')
+                        -if (field.type === 'boolean')
+                            .form-group
+                                .checkbox
+                                    label
+                                        input(type="checkbox" checked=attendee.data[name] name="attendee_data_" + name)
+                                        span= name
+
                         -else
                             .form-group(class='has-feedback')
                                 label(for="data-" + name class="control-label property-name")= name

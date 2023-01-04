@@ -162,17 +162,48 @@ function checkIn(req, res, next){
     var attendeeData;
     async.waterfall([
         function(cb){
-            req.models.attendee.get(attendee_id, cb);
+            async.parallel({
+                attendee: function(cb){
+                    req.models.attendee.get(attendee_id, cb);
+                },
+                importer: function(cb){
+                    req.models.event.get(req.session.currentEvent.id, function(err, eventData){
+                        if (err) { return cb(err); }
+                        req.models.importer.get(eventData.importer_id, cb);
+                    });
+                }
+            }, cb);
         },
-        function(attendee, cb){
-            if (attendee_id.checked_in === true){
+        function(results, cb){
+            const attendee = results.attendee;
+
+            if (attendee.checked_in === true){
                 if (req.originalUrl.match(/\/api\//)){
                     res.json({success:true});
                 } else {
-                    req.flash('success', attendeeData.name + ' is already checked in');
-                    res.redirect('/attendees/' + attendee_id);
+                    if (req.originalUrl.match(/\/api\//)){
+                        return res.json({success:true});
+                    } else {
+                        req.flash('success', attendee.name + ' is already checked in');
+                        return res.redirect('/attendees/' + attendee_id);
+                    }
                 }
             }
+
+            for (const field in results.importer.rules.attendee){
+                if (results.importer.rules.attendee[field].requireForCheckin){
+                    if (!attendee.data[field]){
+
+                        if (req.originalUrl.match(/\/api\//)){
+                            return res.json({success:false, message:`${attendee.name} can not be checked in`});
+                        } else {
+                            req.flash('error', `${attendee.name} can not be checked in`);
+                            return res.redirect('/attendees/' + attendee_id);
+                        }
+                    }
+                }
+            }
+
             attendee.checked_in = true;
 
             attendeeData = attendee;

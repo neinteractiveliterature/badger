@@ -42,9 +42,18 @@ block content
 
                                 -else if (! session.currentEvent.importer.rules.attendee[field].admin ||checkPermission('eventadmin') )
                                     td
-                                        div(id='attendee-' + attendee.id + '-data-' + field,
-                                            class='property-name editable editable-' + (session.currentEvent.importer.rules.attendee[field].type||'text')
-                                        )= attendee.data[field]
+
+                                        if (session.currentEvent.importer.rules.attendee[field].type === 'boolean')
+                                            div(id='attendee-' + attendee.id + '-data-' + field,
+                                                data-fieldName = field
+                                                class='property-name editable editable-boolean'
+                                            )= attendee.data[field]?'Yes':'No'
+
+                                        else
+                                            div(id='attendee-' + attendee.id + '-data-' + field,
+                                                data-fieldName = field
+                                                class='property-name editable editable-' + (session.currentEvent.importer.rules.attendee[field].type||'text')
+                                            )= attendee.data[field]
 
                                 -else
                                     td(id='attendee-' + attendee.id + '-data-' + field, class='property-name')= attendee.data[field]
@@ -149,6 +158,8 @@ block content
                     +pager
 
 append scripts
+    script.
+        const eventDataFields = !{JSON.stringify(session.currentEvent.importer.rules.attendee)}
     script(src='/javascripts/data-table.js')
     script(src='/javascripts/showAttendee.js')
     script(src='/javascripts/auditHistory.js')

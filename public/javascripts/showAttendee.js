@@ -1,4 +1,4 @@
-/* global showAlert */
+/* global showAlert eventDataFields */
 var disallowKeypress = 0;
 showActions();
 
@@ -114,16 +114,55 @@ function showActions(){
     var badged = $('.badged').text();
     var checkedIn = $('.checked-in').text();
 
+    const actions = {
+        checkIn: false,
+        uncheckIn: false,
+        unregister: false,
+        badge: false,
+    };
+
     if (checkedIn === 'Yes'){
-        $('#btn-checkin-badge').hide();
+        actions.uncheckIn = true;
+        if (checkFields()){
+            actions.badge = true;
+        }
+
+    } else {
+        actions.unregister = true;
+        if (registered && checkFields()){
+            actions.checkIn = true;
+            actions.badge = true;
+        }
+    }
+
+    if (actions.checkIn){
+        $('#btn-checkin').show();
+    } else {
         $('#btn-checkin').hide();
-        $('#btn-unregister').hide();
+    }
+
+    if (actions.badge){
+        $('#btn-badge').show();
+    } else {
+        $('#btn-badge').hide();
+    }
+
+    if (actions.badge && actions.checkIn){
+        $('#btn-checkin-badge').show();
+    } else {
+        $('#btn-checkin-badge').hide();
+    }
+
+    if (actions.uncheckIn){
         $('#btn-uncheckin').show();
     } else {
-        $('#btn-checkin-badge').show();
-        $('#btn-checkin').show();
-        $('#btn-unregister').show();
         $('#btn-uncheckin').hide();
+    }
+
+    if (actions.unregister){
+        $('#btn-unregister').show();
+    } else {
+        $('#btn-unregister').hide();
     }
 
     if (badged === 'Yes'){
@@ -138,6 +177,19 @@ function showActions(){
     } else {
         $('.registered-actions').hide();
         $('.unregistered-actions').show();
+    }
+
+    function checkFields(){
+        const requiredFields = [];
+        for (const field in eventDataFields){
+            if (eventDataFields[field].requireForCheckin){
+                const value = $(`div[data-fieldname="${field}"]`).text();
+                if (value !== 'Yes'){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }
@@ -189,6 +241,9 @@ function checkIn(){
                 $('#attendee-'+id+'-checked-in').text('Yes');
                 showActions();
                 showAlert('success', 'Checked In');
+            } else {
+                showActions();
+                showAlert('danger', data.message);
             }
         }
     });

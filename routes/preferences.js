@@ -34,7 +34,7 @@ function update(req, res, next){
         return res.redirect('/preferences');
     }
 
-    req.models.user.get(id, function(err, userDoc){
+    req.models.user.get(id, async function(err, userDoc){
         if (err) {
             req.flash('error', err);
             return res.redirect('/preferences');
@@ -48,14 +48,8 @@ function update(req, res, next){
                 return res.redirect('/preferences');
             }
 
-            auth.hash(user.password, function(err, hash){
-                if (err){
-                    req.flash('error', err);
-                    return res.redirect('/preferences');
-                }
-                userDoc.password = hash;
-                updateUser(userDoc);
-            });
+            userDoc.password = await auth.hash(user.password);
+            updateUser(userDoc);
         } else {
             updateUser(userDoc);
         }
