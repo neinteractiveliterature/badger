@@ -28,7 +28,11 @@ block content
                             td(class="printer-active")
                                 if (device.active)
                                     <span class="label label-success">active</span>
-                            td= device.status.toLowerCase() + ' ( ' + device.options['printer-state-reasons'].replace(/-(report|warning|error)$/, '') + ' )'
+                            td
+                                if device.status
+                                    = device.status.toLowerCase() + ' ( ' + device.options['printer-state-reasons'].replace(/-(report|warning|error)$/, '') + ' )'
+                                else
+                                    i Unknown
                             td= device.options['printer-make-and-model']
                             td(class="job-count")= device.jobs ? device.jobs.length : 0
                             td

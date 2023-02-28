@@ -31,7 +31,7 @@ block content
                         td= attendee.checked_in?'Yes':'No'
                         td= attendee.badged?'Yes':'No'
                         for field in session.currentEvent.displayFields
-                            td= attendee.data[field]
+                            td(style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:150px;")= attendee.data[field]
 
             tfoot
                 tr
@@ -42,7 +42,7 @@ block content
                     th Checked In
                     th Badged
                     for field in session.currentEvent.displayFields
-                        th(class="property-name")= field
+                        th(class="property-name" )= field
                 +pager
 
 append scripts
