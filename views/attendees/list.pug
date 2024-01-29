@@ -31,7 +31,11 @@ block content
                         td= attendee.checked_in?'Yes':'No'
                         td= attendee.badged?'Yes':'No'
                         for field in session.currentEvent.displayFields
-                            td(style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:150px;" title=attendee.data[field])= attendee.data[field]
+                            td(style="white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:150px;" title=attendee.data[field])
+                                if session.currentEvent.importer.rules.attendee[field].type === 'boolean'
+                                    = attendee.data[field]?'Yes':'No'
+                                else
+                                    = attendee.data[field]
 
             tfoot
                 tr
