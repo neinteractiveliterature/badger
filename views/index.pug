@@ -1,7 +1,11 @@
 extends layout
 
 block content
-  h2 #{session.currentEvent.name} Check in
+  .row
+    .col-sm-9
+      h2 #{session.currentEvent.name} Check in
+    .col-sm-3
+      h3 #{attendeeData.checkedIn} of #{attendeeData.registered} ( #{Math.round(attendeeData.checkedIn/attendeeData.registered * 100)}% )
   p
     div(class='row')
         div(class='col-sm-9')
@@ -14,4 +18,3 @@ block content
 
 append scripts
     script(src='/javascripts/search.js')
-

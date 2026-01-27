@@ -19,6 +19,8 @@ block content
                     th Description
                     th Importer
                     th Base URL
+                    th Registered
+                    th Checked In
             tbody
                 for event in events
                     tr(class='clickable-row', data-click-object='events' data-click-id=event.id)
@@ -29,6 +31,8 @@ block content
                         td= importers[event.importer_id].name
                         td
                             a(href=event.base_url,target='_blank')= event.base_url
+                        td=event.attendees.registered
+                        td=event.attendees.checkedIn
 
             tfoot
                 +pager

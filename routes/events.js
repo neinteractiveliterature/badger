@@ -26,7 +26,21 @@ function selectEvent(req, res, next){
 function list(req, res, next){
     async.parallel({
         events: function(cb){
-            req.models.event.list(cb);
+            req.models.event.list(function(err, events){
+                if (err) { return cb(err); }
+                async.mapSeries(events, function(event, cb){
+                    req.models.attendee.listByEvent(event.id, function(err, attendees){
+                        if (err) { return cb(err); }
+                        event.attendees = {
+                            total: attendees.length,
+                            registered: _.filter(attendees, function(e) { return e.registered; }).length,
+                            badged: _.filter(attendees, function(e) { return e.badged; }).length,
+                            checkedIn: _.filter(attendees, function(e) { return e.checked_in; }).length
+                        };
+                        cb(null, event);
+                    });
+                }, cb);
+            });
         },
         importers: function(cb){
             req.models.importer.list(cb);
