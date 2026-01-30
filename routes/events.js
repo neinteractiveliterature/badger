@@ -294,6 +294,9 @@ function buildBadge(data, cb){
                 });
             }
         }
+        if (field.substitutions){
+            fieldDoc.substitutions = true;
+        }
         process.nextTick(function(){
             cb(null, fieldDoc);
         });

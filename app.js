@@ -65,16 +65,20 @@ if (config.get('app.sessionType') === 'redis'){
     var RedisStore = require('connect-redis')(session);
     var redisClient = null;
     if (process.env.REDISTOGO_URL) {
+        console.log('Using remote redis for sessions')
         var redisToGo   = require('url').parse(process.env.REDISTOGO_URL);
         redisClient = redis.createClient(redisToGo.port, redisToGo.hostname);
 
         redisClient.auth(redisToGo.auth.split(':')[1]);
 
     } else {
+        console.log('Using local redis for sessions')
         redisClient = redis.createClient();
     }
     sessionConfig.store = new RedisStore({ client: redisClient });
     sessionConfig.resave = true;
+} else {
+    console.log('Using local memory for sessions')
 }
 
 app.use(session(sessionConfig));

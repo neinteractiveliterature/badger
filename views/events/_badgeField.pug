@@ -54,3 +54,10 @@ li(id="emptyField")
                     span.glyphicon.glyphicon-question-sign
             div(class='col-sm-10')
                 input.form-control.input-sm(type="json",placeholder="{ pdfKitOption: value }", name="event[badge][999][pdfOptions]")
+        .form-group
+            label.control-label.col-sm-2 Options
+            .col-sm-10
+                .checkbox
+                    label
+                        input(type="checkbox" name='event[badge][999][substitutions]')
+                        | Use Substitutions
